@@ -22,7 +22,7 @@ for i in range(rows):
         training_rows.append(temp)
 
 # 输出test数据
-outDir = "./depart_test_case/out/"
+outDir = "./depart_test_case/output/"
 testDir = outDir + "all_test.xlsx"
 trainDir = outDir + "all_train.xlsx"
 print(testDir)
