@@ -8,7 +8,9 @@ CF_ACTIVITY_DIR = CF_ROOT + "/active"
 CF_CHARGE_DIR = CF_ROOT + "/charge_record"
 
 CF_SESSION_PREFIX = "session"
+CF_OUTPUT_POWER_USAGE = "session_power_usage"
+EXCEL_SUFFIX = ".xlsx"
 
-## FILTER
-CF_APP_USAGE_FILTER = "session_app_usage_"
-CF_POWER_USAGE_FILTER = "session_power_usage_"
+# export
+EXPORT_APP_DETAIL_USAGES = "app_detail_usages"
+
