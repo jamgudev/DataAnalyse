@@ -14,4 +14,5 @@ EXCEL_SUFFIX = ".xlsx"
 # export
 EXPORT_APP_DETAIL_USAGES = "app_detail_usages"
 EXPORT_APP_SUMMARY_USAGES = "app_summary_usages"
+EXPORT_SESSION_SUMMARY = "session_summary"
 
