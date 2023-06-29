@@ -1,16 +1,17 @@
 import os
+import threading
 import time
 # 去掉UserWarning: Workbook contains no default style, apply openpyxl's default
 import warnings
 
 import pandas as pd
-import tqdm as tqdm
 from alive_progress import alive_bar
 
 from analyse import AppUsageAnalyse
 from analyse.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX
 from analyse.util.AnalyseUtils import filter_file_fun
+from util import JLog
 
 warnings.filterwarnings('ignore')
 
@@ -27,29 +28,35 @@ def iter_files(rootDir):
     # 遍历根目录
     for root, dirs, files in os.walk(rootDir):
 
+        dirs.sort()
         for sub_dir in dirs:
             iter_files(sub_dir)
 
         if files:
-            # 对文件名做一个排序，防止power数据错乱
-            files.sort()
+            # threading.Thread(target=iter_data, args=(root, files)).start()
             iter_data(root, files)
 
 
 def iter_data(rootPath: str, files: []):
-    # 过滤出想要的文件
-    powerUsageFiles = filter(filter_power_data_fun, files)
-    # 合并同文件夹下所有powerUsageFile
-    powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
-
-    appUsageFiles = filter(filter_app_usage_fun, files)
-
-    outputRootPath = rootPath.replace(INPUT_FILE, OUTPUT_FILE)
-    with alive_bar(100, ctrl_c=False, title=f'分析进度{rootPath}') as bar:
-        for file in appUsageFiles:
-            fileAbsoluteName = os.path.join(rootPath, file)
-            AppUsageAnalyse.analyse(fileAbsoluteName, powerDataOutputPath, outputRootPath)
-            bar()
+    with alive_bar(100, manual=True, ctrl_c=True, title=f'分析进度{rootPath}') as bar:
+        # 对文件名做一个排序，防止power数据错乱
+        files.sort()
+        bar(0.05)
+        # 过滤出想要的文件
+        powerUsageFiles = filter(filter_power_data_fun, files)
+        bar(0.10)
+        # 合并同文件夹下所有powerUsageFile
+        powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
+        bar(0.35)
+        # 过滤出 session_app_usage_ 文件
+        appUsageFiles = list(filter(filter_app_usage_fun, files))
+        bar(0.40)
+        outputRootPath = rootPath.replace(INPUT_FILE, OUTPUT_FILE)
+        fileNum = len(appUsageFiles)
+        for idx, file in enumerate(appUsageFiles):
+            appUsageFilePath = os.path.join(rootPath, file)
+            AppUsageAnalyse.analyse(appUsageFilePath, powerDataOutputPath, outputRootPath)
+            bar(0.4 + (((idx + 1) * 1.0 / fileNum) * 0.6))
 
 
 # 过滤app_usage文件
@@ -102,7 +109,10 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
         outputDF.to_excel(outputFilePath, header=None, index=False)
         return outputFilePath
 
+    return ""
 
 
-
+startTime = time.time()
 iter_files(activeRootPath)
+cost = time.time() - startTime
+JLog.d("Root", f"program takes {cost} s.")

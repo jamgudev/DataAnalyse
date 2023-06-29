@@ -1,5 +1,7 @@
+import os.path
+
 import pandas as pd
-from util import TimeUtils, ExcelUtil
+from util import TimeUtils, ExcelUtil, JLog
 import warnings
 from pandas import DataFrame
 
@@ -11,6 +13,7 @@ warnings.filterwarnings('ignore')
 # app_usage 格式
 # com.xingin.xhs	com.xingin.xhs.index.v2.IndexActivityV2	20230602(18_37_04_105)	20230602(18_37_08_100)	00_00_03_995	3995
 
+__TAG = "AppUsageAnalyse"
 __screen_on_time_idx = 1
 __app_name_idx = 0
 __app_page_name_idx = 1
@@ -21,7 +24,6 @@ __power_time_idx = 0
 __power_network_speed_idx = 12
 __session_total_duration_idx = 4
 
-
 __filter_screen_on = "Screen On"
 __filter_screen_off = "Screen Off"
 __filter_user_present = "User Present"
@@ -31,7 +33,6 @@ __filter_session_summery = "Session Summarize"
 
 # app在一个session内使用的详细记录，包括各个页面的使用详情
 class AppDetailUsage:
-
     __detail_usage_app_name_idx = 0
     __detail_usage_page_name_idx = 1
     __detail_usage_page_start_time_idx = 2
@@ -192,6 +193,12 @@ class SessionSummery:
                 self.app_stay_longest_network, self.app_stay_shortest_network]
 
     @staticmethod
+    def empty_session(start_time: str, duration: int):
+        session = SessionSummery(set(), set(), start_time, duration, 0, "", 0, "",
+                                 0, "", 0, "", 0, 0, 0)
+        return session
+
+    @staticmethod
     def excel_header() -> []:
         return ["session期间不同App打开数量", "session期间不同页面打开数量", "session开始时间", "session持续时间",
                 "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
@@ -283,6 +290,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
                 ExcelUtil.write_to_excel(toExcelData, exportAppSummaryUsagePath)
 
             return appSummaryUsagesDict.values()
+    return []
 
 
 def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, outputRootDir: str) -> []:
@@ -342,20 +350,20 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
             stayDuration = summaryUsage.app_stay_duration
 
             appOpenSet.add(appName)
-            # TODO bugfix pageOpenSet返回为空
-            appPageOpenSet.union(pageOpenSet)
+            appPageOpenSet = appPageOpenSet.union(pageOpenSet)
             sessionNetworkSpent += appNetWorkSpent
             if appOpenMostFrequentlyTimes < openTimes:
                 appOpenMostFrequentlyName = appName
                 appOpenMostFrequentlyTimes = openTimes
-            if appOpenLessFrequentlyTimes > openTimes:
+            if appOpenLessFrequentlyTimes == 0 or appOpenLessFrequentlyTimes > openTimes:
                 appOpenLessFrequentlyName = appName
                 appOpenLessFrequentlyTimes = openTimes
+
             if appStayLongestDuration < stayDuration:
                 appStayLongestName = appName
                 appStayLongestNetworkSpent = appNetWorkSpent
                 appStayLongestDuration = stayDuration
-            if appStayShortestDuration > stayDuration:
+            if appStayShortestDuration == 0 or appStayShortestDuration > stayDuration:
                 appStayShortestName = appName
                 appStayShortestDuration = stayDuration
                 appStayShortestNetworkSpent = appNetWorkSpent
@@ -365,13 +373,23 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
                                       appOpenLessFrequentlyTimes, appStayLongestName, appStayLongestDuration,
                                       appStayShortestName, appStayShortestDuration, appStayLongestNetworkSpent,
                                       appStayShortestNetworkSpent)
-        toExcelData = [sessionUsage.to_excel_list()]
-        toExcelData.insert(0, SessionSummery.excel_header())
-        exportSessionSummaryPath = outputRootDir + "/" + EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX
-        ExcelUtil.write_to_excel(toExcelData, exportSessionSummaryPath)
+    else:
+        sessionUsage = SessionSummery.empty_session(startTime, sessionDuration)
+
+    toExcelData = [sessionUsage.to_excel_list()]
+    toExcelData.insert(0, SessionSummery.excel_header())
+    exportSessionSummaryPath = outputRootDir + "/" + EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX
+    ExcelUtil.write_to_excel(toExcelData, exportSessionSummaryPath)
 
 
 def analyse(appUsageFilePath: str, powerDataFilePath: str, outputRootDir: str):
+    if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(appUsageFilePath)):
+        JLog.e(__TAG, f"appUsageFilePath: {appUsageFilePath} is not str or file does not exist")
+        return
+    if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(powerDataFilePath)):
+        JLog.e(__TAG, f"powerDataFilePath: {powerDataFilePath} is not str or file does not exist")
+        return
+
     appUsageData = pd.read_excel(appUsageFilePath, header=None)
     powerData = pd.read_excel(powerDataFilePath, header=None)
 
