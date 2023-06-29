@@ -32,7 +32,3 @@ def e(tag: str, msg: str):
 
 def __print(tag: str, msg: str, color: __Color):
     print(f"\033[{color.value}m[{tag}]:::>> {msg}\033[{color.value}m\033[0m\033[0m")
-
-
-e("sss", "ssss")
-print("dlksjfajf")

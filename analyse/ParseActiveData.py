@@ -1,6 +1,4 @@
 import os
-import threading
-import time
 # 去掉UserWarning: Workbook contains no default style, apply openpyxl's default
 import warnings
 
@@ -10,8 +8,9 @@ from alive_progress import alive_bar
 from analyse import AppUsageAnalyse
 from analyse.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX
+from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
-from util import JLog
+from util import JLog, ExcelUtil
 
 warnings.filterwarnings('ignore')
 
@@ -20,7 +19,8 @@ __CF_APP_USAGE_FILTER = "session_app_usage_"
 __CF_POWER_USAGE_FILTER = "session_power_usage_"
 
 USER_NAME = "./" + INPUT_FILE + "/13266826670_三星"
-activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
+ACTIVE_ROOT_PATH = USER_NAME + "/" + CF_ACTIVITY_DIR
+__TAG = "ParseActiveData"
 
 
 # 遍历文件夹
@@ -33,12 +33,11 @@ def iter_files(rootDir):
             iter_files(sub_dir)
 
         if files:
-            # threading.Thread(target=iter_data, args=(root, files)).start()
             iter_data(root, files)
 
 
 def iter_data(rootPath: str, files: []):
-    with alive_bar(100, manual=True, ctrl_c=True, title=f'分析进度{rootPath}') as bar:
+    with alive_bar(100, manual=True, ctrl_c=True, title=f'分析进度 {StringUtil.get_short_file_name_for_print(rootPath)}') as bar:
         # 对文件名做一个排序，防止power数据错乱
         files.sort()
         bar(0.05)
@@ -88,6 +87,11 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
     if not os.path.exists(outputRootPath):
         os.makedirs(outputRootPath)
 
+    outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
+    if os.path.exists(outputFilePath):
+        JLog.i(__TAG, f"power file {StringUtil.get_short_file_name_for_print(outputFilePath)} already exist, skipped.")
+        return outputFilePath
+
     powerData = []
     # 为了获取filter的长度
     for fileName in fileNames:
@@ -104,15 +108,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
             powerData.append(singleLine)
 
     if powerData:
-        outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
-        outputDF = pd.DataFrame(powerData)
-        outputDF.to_excel(outputFilePath, header=None, index=False)
+        ExcelUtil.write_to_excel(powerData, outputRootPath,  "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
         return outputFilePath
 
     return ""
-
-
-startTime = time.time()
-iter_files(activeRootPath)
-cost = time.time() - startTime
-JLog.d("Root", f"program takes {cost} s.")

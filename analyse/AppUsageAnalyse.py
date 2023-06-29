@@ -1,6 +1,8 @@
 import os.path
 
 import pandas as pd
+
+from analyse.util import StringUtil
 from util import TimeUtils, ExcelUtil, JLog
 import warnings
 from pandas import DataFrame
@@ -286,8 +288,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
             if appSummaryUsages:
                 toExcelData = appSummaryUsages.copy()
                 toExcelData.insert(0, AppSummeryUsage.excel_header())
-                exportAppSummaryUsagePath = outputRootDir + "/" + EXPORT_APP_SUMMARY_USAGES + EXCEL_SUFFIX
-                ExcelUtil.write_to_excel(toExcelData, exportAppSummaryUsagePath)
+                ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_APP_SUMMARY_USAGES + EXCEL_SUFFIX)
 
             return appSummaryUsagesDict.values()
     return []
@@ -319,8 +320,7 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, ou
     if appDetailUsages:
         toExcelData = appDetailUsages.copy()
         toExcelData.insert(0, AppDetailUsage.excel_header())
-        exportAppDetailFilePath = outputRootDir + "/" + EXPORT_APP_DETAIL_USAGES + EXCEL_SUFFIX
-        ExcelUtil.write_to_excel(toExcelData, exportAppDetailFilePath)
+        ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_APP_DETAIL_USAGES + EXCEL_SUFFIX)
 
     return outAppDetailUsages
 
@@ -378,21 +378,24 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
 
     toExcelData = [sessionUsage.to_excel_list()]
     toExcelData.insert(0, SessionSummery.excel_header())
-    exportSessionSummaryPath = outputRootDir + "/" + EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX
-    ExcelUtil.write_to_excel(toExcelData, exportSessionSummaryPath)
+    ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX)
 
 
 def analyse(appUsageFilePath: str, powerDataFilePath: str, outputRootDir: str):
     if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(appUsageFilePath)):
-        JLog.e(__TAG, f"appUsageFilePath: {appUsageFilePath} is not str or file does not exist")
+        JLog.e(__TAG, f"appUsageFilePath: {StringUtil.get_short_file_name_for_print(appUsageFilePath)} "
+                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
         return
+    else :
+        appUsageData = pd.read_excel(appUsageFilePath, header=None)
+
     if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(powerDataFilePath)):
-        JLog.e(__TAG, f"powerDataFilePath: {powerDataFilePath} is not str or file does not exist")
-        return
-
-    appUsageData = pd.read_excel(appUsageFilePath, header=None)
-    powerData = pd.read_excel(powerDataFilePath, header=None)
-
+        JLog.e(__TAG, f"powerDataFilePath: {StringUtil.get_short_file_name_for_print(powerDataFilePath)} "
+                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
+        powerData = DataFrame()
+        # return
+    else:
+        powerData = pd.read_excel(powerDataFilePath, header=None)
     # 解析App使用详细数据
     appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, outputRootDir)
 
@@ -414,15 +417,15 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, outputRootDir: str):
     #         appDetailUsages[appPage]
 
 
-USER_NAME = "./" + INPUT_FILE + "/13266826670_三星"
-activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
-appUsageFile = activeRootPath + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)/session_app_usage_39899.xlsx"
-longAppUsageFile = activeRootPath + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)/session_app_usage_1739224.xlsx"
-
-outputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)"
-powerFile = outputDir + "/session_power_usage.xlsx"
-
-longOutputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)"
-longPowerFile = longOutputDir + "/session_power_usage.xlsx"
-# analyse(appUsageFile, powerFile, outputDir)
-analyse(longAppUsageFile, longPowerFile, longOutputDir)
+# USER_NAME = "./" + INPUT_FILE + "/13266826670_三星"
+# activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
+# appUsageFile = activeRootPath + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)/session_app_usage_39899.xlsx"
+# longAppUsageFile = activeRootPath + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)/session_app_usage_1739224.xlsx"
+#
+# outputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)"
+# powerFile = outputDir + "/session_power_usage.xlsx"
+#
+# longOutputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)"
+# longPowerFile = longOutputDir + "/session_power_usage.xlsx"
+# # analyse(appUsageFile, powerFile, outputDir)
+# analyse(longAppUsageFile, longPowerFile, longOutputDir)
