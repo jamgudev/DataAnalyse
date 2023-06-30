@@ -83,6 +83,7 @@ class AppDetailUsage:
         self.units_mem_dirty = 0.0
         self.units_mem_anonPages = 0.0
         self.units_mem_mapped = 0.0
+        self.all_units_power = []
 
     def to_excel_list(self) -> []:
         return [self.app_name, self.page_name, self.start_time, self.duration, self.network_spent, self.units_screen_brightness,
@@ -139,6 +140,7 @@ class AppDetailUsage:
         self.units_mem_dirty = unit_pw[24]
         self.units_mem_anonPages = unit_pw[25]
         self.units_mem_mapped = unit_pw[26]
+        self.all_units_power = unit_pw
 
 
 
@@ -179,6 +181,33 @@ class AppSummeryUsage:
         self.page_stay_shortest_network = page_stay_shortest_network
         self.app_stay_duration = app_stay_duration
         self.app_network_spent = app_network_spent
+        self.units_screen_brightness = 0.0
+        self.units_music_on = 0.0
+        self.units_phone_ring = 0.0
+        self.units_phone_off_hook = 0.0
+        self.units_wifi_network = 0.0
+        self.units_2g_network = 0.0
+        self.units_3g_network = 0.0
+        self.units_4g_network = 0.0
+        self.units_5g_network = 0.0
+        self.units_other_network = 0.0
+        self.units_is_wifi_enable = 0.0
+        self.units_network_speed = 0.0
+        self.units_cpu0 = 0.0
+        self.units_cpu1 = 0.0
+        self.units_cpu2 = 0.0
+        self.units_cpu3 = 0.0
+        self.units_cpu4 = 0.0
+        self.units_cpu5 = 0.0
+        self.units_cpu6 = 0.0
+        self.units_cpu7 = 0.0
+        self.units_bluetooth = 0.0
+        self.units_mem_available = 0.0
+        self.units_mem_active = 0.0
+        self.units_mem_dirty = 0.0
+        self.units_mem_anonPages = 0.0
+        self.units_mem_mapped = 0.0
+        self.all_units_power = []
 
     def to_excel_list(self) -> []:
         return [self.app_name, self.app_open_times, len(self.page_open_set), self.page_stay_longest_name,
@@ -342,6 +371,32 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
             networkSpent = detailUsage.network_spent
             pageName = detailUsage.page_name
             pageDuration = detailUsage.duration
+            unitScreenBrightness = detailUsage.units_screen_brightness
+            unitMusicOn = detailUsage.units_music_on
+            unitPhoneRing = detailUsage.units_phone_ring
+            unitPhoneOffHook = detailUsage.units_phone_off_hook
+            unitWifiNetwork = detailUsage.units_wifi_network
+            unit2gNetwork = detailUsage.units_2g_network
+            unit3gNetwork = detailUsage.units_3g_network
+            unit4gNetwork = detailUsage.units_4g_network
+            unit5gNetwork = detailUsage.units_5g_network
+            unitOtherWork = detailUsage.units_other_network
+            unitIsWifiEnable = detailUsage.units_is_wifi_enable
+            unitNetworkSpeed = detailUsage.units_network_speed
+            unitCpu0 = detailUsage.units_cpu0
+            unitCpu1 = detailUsage.units_cpu1
+            unitCpu2 = detailUsage.units_cpu2
+            unitCpu3 = detailUsage.units_cpu3
+            unitCpu4 = detailUsage.units_cpu4
+            unitCpu5 = detailUsage.units_cpu5
+            unitCpu6 = detailUsage.units_cpu6
+            unitCpu7 = detailUsage.units_cpu7
+            unitBluetooth = detailUsage.units_bluetooth
+            unitMemAvailable = detailUsage.units_mem_available
+            unitMemActive = detailUsage.units_mem_active
+            unitMemAnonPages = detailUsage.units_mem_anonPages
+            unitMemDirty = detailUsage.units_mem_dirty
+            unitMemMapped = detailUsage.units_mem_mapped
             if appName in appSummaryUsagesDict:
                 appSummaryUsage = appSummaryUsagesDict.get(appName)
                 # 如果上一个打开的app不是这个app，说明又打开了一次
@@ -349,6 +404,28 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
                     appSummaryUsage.app_open_times += 1
                 # 累加流量消耗
                 appSummaryUsage.app_network_spent += networkSpent
+                # 累加部件功耗
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_music_on += unitMusicOn
+                appSummaryUsage.units_phone_ring += unitPhoneRing
+                appSummaryUsage.units_phone_off_hook += unitPhoneOffHook
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_screen_brightness += unitScreenBrightness
                 # 累加app停留时间
                 appSummaryUsage.app_stay_duration += pageDuration
                 # 添加打开的页面
