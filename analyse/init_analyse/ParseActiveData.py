@@ -6,10 +6,10 @@ import pandas as pd
 from alive_progress import alive_bar
 
 from analyse.init_analyse import AppUsageAnalyse
-from analyse.util.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
-    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
 from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
+from analyse.util.FilePathDefinition import INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
+    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
 from util import JLog, ExcelUtil
 
 warnings.filterwarnings('ignore')
@@ -47,7 +47,7 @@ def iter_data(rootPath: str, files: []):
         powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
         bar(0.35)
         # 计算各部件分别的功耗
-        unitsPowerData = export_units_power(powerDataOutputPath, outputRootPath)
+        unitsPowerDataPath = export_units_power(powerDataOutputPath, outputRootPath)
         bar(0.45)
         # 过滤出 session_app_usage_ 文件
         appUsageFiles = list(filter(filter_app_usage_fun, files))
@@ -59,7 +59,7 @@ def iter_data(rootPath: str, files: []):
         else:
             for idx, file in enumerate(appUsageFiles):
                 appUsageFilePath = os.path.join(rootPath, file)
-                AppUsageAnalyse.analyse(appUsageFilePath, powerDataOutputPath, outputRootPath)
+                AppUsageAnalyse.analyse(appUsageFilePath, powerDataOutputPath, unitsPowerDataPath, outputRootPath)
                 bar(0.5 + (((idx + 1) * 1.0 / fileNum) * 0.5))
 
 
@@ -87,6 +87,7 @@ def analyse_app_usage_file(input_root_path: str, app_usage_file_name: str, power
     appUsageData = pd.read_excel(appUsageFile, header=None)
 
 
+# 合并所有power_data文件
 def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
     outputRootPath = intputRootPath.replace(INPUT_FILE, OUTPUT_FILE)
     if not os.path.exists(outputRootPath):
@@ -122,7 +123,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
 # 输出功耗文件，并返回路径
 def export_units_power(powerDataPath: str, outputDir: str) -> str:
     if not os.path.exists(powerDataPath):
-        JLog.e(__TAG, f"calculate_units_power failed: file from powerDataPath[{powerDataPath}] not exists, skipped.")
+        JLog.i(__TAG, f"export_units_power failed: file from powerDataPath[{powerDataPath}] not exists, skipped.")
         return ""
 
     powerData = ExcelUtil.read_excel(powerDataPath, 1)

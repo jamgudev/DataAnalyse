@@ -8,7 +8,7 @@ import warnings
 from pandas import DataFrame
 
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
-    EXPORT_SESSION_SUMMARY
+    EXPORT_SESSION_SUMMARY, PP_HEADERS
 
 warnings.filterwarnings('ignore')
 
@@ -57,9 +57,40 @@ class AppDetailUsage:
         self.start_time = start_time
         self.duration = duration
         self.network_spent = network_spent
+        self.units_screen_brightness = 0.0
+        self.units_music_on = 0.0
+        self.units_phone_ring = 0.0
+        self.units_phone_off_hook = 0.0
+        self.units_wifi_network = 0.0
+        self.units_2g_network = 0.0
+        self.units_3g_network = 0.0
+        self.units_4g_network = 0.0
+        self.units_5g_network = 0.0
+        self.units_other_network = 0.0
+        self.units_is_wifi_enable = 0.0
+        self.units_network_speed = 0.0
+        self.units_cpu0 = 0.0
+        self.units_cpu1 = 0.0
+        self.units_cpu2 = 0.0
+        self.units_cpu3 = 0.0
+        self.units_cpu4 = 0.0
+        self.units_cpu5 = 0.0
+        self.units_cpu6 = 0.0
+        self.units_cpu7 = 0.0
+        self.units_bluetooth = 0.0
+        self.units_mem_available = 0.0
+        self.units_mem_active = 0.0
+        self.units_mem_dirty = 0.0
+        self.units_mem_anonPages = 0.0
+        self.units_mem_mapped = 0.0
 
     def to_excel_list(self) -> []:
-        return [self.app_name, self.page_name, self.start_time, self.duration, self.network_spent]
+        return [self.app_name, self.page_name, self.start_time, self.duration, self.network_spent, self.units_screen_brightness,
+                self.units_music_on, self.units_phone_ring, self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network,
+                self.units_3g_network, self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
+                self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4,
+                self.units_cpu5, self.units_cpu6, self.units_cpu7, self.units_bluetooth, self.units_mem_available, self.units_mem_active,
+                self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped]
 
     @staticmethod
     def from_list(detailUsageList: []):
@@ -72,7 +103,43 @@ class AppDetailUsage:
 
     @staticmethod
     def excel_header() -> []:
-        return ["包名", "页面名", "这个页面在一天中的什么时间被浏览", "在这个页面累计停留时间", "在这个页面消耗的流量"]
+        unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
+        app_usages_headers = ["包名", "页面名", "这个页面在一天中的什么时间被浏览", "在这个页面累计停留时间", "在这个页面消耗的流量"]
+        app_usages_headers.extend(unit_headers)
+        return app_usages_headers
+
+    def add_unit_pw(self, unit_pw:[]):
+        if len(unit_pw) < 27:
+            JLog.i("AppDetailUsage", f"add_unit_pw failed: list [unit_pw] len {len(unit_pw)} less than 27, skipped.")
+            return
+        # 跳过第一个，是时间戳
+        self.units_screen_brightness = unit_pw[1]
+        self.units_music_on = unit_pw[2]
+        self.units_phone_ring = unit_pw[3]
+        self.units_phone_off_hook = unit_pw[4]
+        self.units_wifi_network = unit_pw[5]
+        self.units_2g_network = unit_pw[6]
+        self.units_3g_network = unit_pw[7]
+        self.units_4g_network = unit_pw[8]
+        self.units_5g_network = unit_pw[9]
+        self.units_other_network = unit_pw[10]
+        self.units_is_wifi_enable = unit_pw[11]
+        self.units_network_speed = unit_pw[12]
+        self.units_cpu0 = unit_pw[13]
+        self.units_cpu1 = unit_pw[14]
+        self.units_cpu2 = unit_pw[15]
+        self.units_cpu3 = unit_pw[16]
+        self.units_cpu4 = unit_pw[17]
+        self.units_cpu5 = unit_pw[18]
+        self.units_cpu6 = unit_pw[19]
+        self.units_cpu7 = unit_pw[20]
+        self.units_bluetooth = unit_pw[21]
+        self.units_mem_available = unit_pw[22]
+        self.units_mem_active = unit_pw[23]
+        self.units_mem_dirty = unit_pw[24]
+        self.units_mem_anonPages = unit_pw[25]
+        self.units_mem_mapped = unit_pw[26]
+
 
 
 # app 在一个session内使用的概览
@@ -221,17 +288,46 @@ class SessionSummery:
 
 def get_page_network_spent(powerData: DataFrame, pageStartTime: str, pageEndTime: str):
     powerDataRows = powerData.shape[0]
-    networkSpent = 0
-    for row in range(powerDataRows):
-        time = powerData.iloc[row, __power_time_idx]
-        networkSpeed = powerData.iloc[row, __power_network_speed_idx]
-        if TimeUtils.compare_time(time, pageStartTime) >= 0:
-            networkSpent += networkSpeed
-        if TimeUtils.compare_time(time, pageEndTime) == 0:
-            networkSpent += networkSpeed
-            break
+    if powerDataRows == 0:
+        return -1
+    else:
+        networkSpent = 0
+        for row in range(powerDataRows):
+            time = powerData.iloc[row, __power_time_idx]
+            networkSpeed = powerData.iloc[row, __power_network_speed_idx]
+            if TimeUtils.compare_time(time, pageEndTime) > 0:
+                break
+            if TimeUtils.compare_time(time, pageStartTime) >= 0:
+                networkSpent += networkSpeed
 
-    return networkSpent
+        return networkSpent
+
+
+def get_unit_consumption(unitPowerData: DataFrame, pageStartTime: str, pageEndTime: str) -> []:
+    unitDataRows = unitPowerData.shape[0]
+    if unitDataRows == 0:
+        return []
+    else:
+        unitPowers = []
+        for row in range(unitDataRows):
+            # 跳过表头
+            if row == 0:
+                continue
+            time = unitPowerData.iloc[row, __power_time_idx]
+            # 当前时间已经超过结束时间
+            if TimeUtils.compare_time(time, pageEndTime) > 0:
+                break
+            if TimeUtils.compare_time(time, pageStartTime) >= 0:
+                if len(unitPowers) == 0:
+                    unitPowers = unitPowerData.iloc[row]
+                else:
+                    # 累加
+                    for idx, unit in enumerate(unitPowers):
+                        # 跳过时间戳
+                        if idx != 0:
+                            unitPowers[idx] += unitPowerData.iloc[row, idx]
+
+        return unitPowers
 
 
 # 从app使用的详细记录里，总结出概括
@@ -294,7 +390,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
     return []
 
 
-def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, outputRootDir: str) -> []:
+def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, unitsPowerData: DataFrame, outputRootDir: str) -> []:
     appUsageRows = appUsageData.shape[0]
 
     appDetailUsages = []
@@ -309,6 +405,7 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, ou
             pageDuration = appUsageData.iloc[i, __app_page_duration_time_idx]
             pageNetworkSpent = get_page_network_spent(powerData, startTime, endTime)
             appDetailUsage = AppDetailUsage(appName, appPage, startTime, pageDuration, pageNetworkSpent)
+            appDetailUsage.add_unit_pw(get_unit_consumption(unitsPowerData, startTime, endTime))
             appDetailUsages.append(appDetailUsage.to_excel_list())
             outAppDetailUsages.append(appDetailUsage)
         elif __filter_session_summery in lineHeader:
@@ -381,23 +478,32 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
     ExcelUtil.write_to_excel(toExcelData, outputRootDir, EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX)
 
 
-def analyse(appUsageFilePath: str, powerDataFilePath: str, outputRootDir: str):
+# noinspection DuplicatedCode
+def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: str, outputRootDir: str):
     if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(appUsageFilePath)):
         JLog.e(__TAG, f"appUsageFilePath: {StringUtil.get_short_file_name_for_print(appUsageFilePath)} "
                       f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
         return
-    else :
+    else:
         appUsageData = pd.read_excel(appUsageFilePath, header=None)
 
-    if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(powerDataFilePath)):
-        JLog.e(__TAG, f"powerDataFilePath: {StringUtil.get_short_file_name_for_print(powerDataFilePath)} "
+    if (not isinstance(powerDataFilePath, str)) or (not os.path.exists(powerDataFilePath)):
+        JLog.i(__TAG, f"powerDataFilePath: {StringUtil.get_short_file_name_for_print(powerDataFilePath)} "
                       f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
         powerData = DataFrame()
         # return
     else:
         powerData = pd.read_excel(powerDataFilePath, header=None)
+
+    if (not isinstance(unitsPowerDataPath, str)) or (not os.path.exists(unitsPowerDataPath)):
+        JLog.i(__TAG, f"unitsPowerDataPath: {StringUtil.get_short_file_name_for_print(unitsPowerDataPath)} "
+                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
+        unitsPowerData = DataFrame()
+    else:
+        unitsPowerData = pd.read_excel(unitsPowerDataPath, header=None)
+
     # 解析App使用详细数据
-    appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, outputRootDir)
+    appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, unitsPowerData, outputRootDir)
 
     # 得到app使用概括
     summaryUsages = __summarize_detail_usage(appDetailUsages, outputRootDir)
