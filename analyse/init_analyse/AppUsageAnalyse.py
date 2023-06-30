@@ -7,7 +7,7 @@ from util import TimeUtils, ExcelUtil, JLog
 import warnings
 from pandas import DataFrame
 
-from analyse.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
+from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
     EXPORT_SESSION_SUMMARY
 
 warnings.filterwarnings('ignore')
@@ -288,7 +288,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
             if appSummaryUsages:
                 toExcelData = appSummaryUsages.copy()
                 toExcelData.insert(0, AppSummeryUsage.excel_header())
-                ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_APP_SUMMARY_USAGES + EXCEL_SUFFIX)
+                ExcelUtil.write_to_excel(toExcelData, outputRootDir, EXPORT_APP_SUMMARY_USAGES + EXCEL_SUFFIX)
 
             return appSummaryUsagesDict.values()
     return []
@@ -320,7 +320,7 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, ou
     if appDetailUsages:
         toExcelData = appDetailUsages.copy()
         toExcelData.insert(0, AppDetailUsage.excel_header())
-        ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_APP_DETAIL_USAGES + EXCEL_SUFFIX)
+        ExcelUtil.write_to_excel(toExcelData, outputRootDir, EXPORT_APP_DETAIL_USAGES + EXCEL_SUFFIX)
 
     return outAppDetailUsages
 
@@ -378,7 +378,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
 
     toExcelData = [sessionUsage.to_excel_list()]
     toExcelData.insert(0, SessionSummery.excel_header())
-    ExcelUtil.write_to_excel(toExcelData, outputRootDir, "/" + EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX)
+    ExcelUtil.write_to_excel(toExcelData, outputRootDir, EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX)
 
 
 def analyse(appUsageFilePath: str, powerDataFilePath: str, outputRootDir: str):

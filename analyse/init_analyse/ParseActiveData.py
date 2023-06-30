@@ -5,9 +5,9 @@ import warnings
 import pandas as pd
 from alive_progress import alive_bar
 
-from analyse import AppUsageAnalyse
-from analyse.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
-    EXCEL_SUFFIX
+from analyse.init_analyse import AppUsageAnalyse
+from analyse.util.FilePathDefinition import CF_ACTIVITY_DIR, INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
+    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
 from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
 from util import JLog, ExcelUtil
@@ -18,8 +18,6 @@ warnings.filterwarnings('ignore')
 __CF_APP_USAGE_FILTER = "session_app_usage_"
 __CF_POWER_USAGE_FILTER = "session_power_usage_"
 
-USER_NAME = "./" + INPUT_FILE + "/13266826670_三星"
-ACTIVE_ROOT_PATH = USER_NAME + "/" + CF_ACTIVITY_DIR
 __TAG = "ParseActiveData"
 
 
@@ -45,17 +43,24 @@ def iter_data(rootPath: str, files: []):
         powerUsageFiles = filter(filter_power_data_fun, files)
         bar(0.10)
         # 合并同文件夹下所有powerUsageFile
+        outputRootPath = rootPath.replace(INPUT_FILE, OUTPUT_FILE)
         powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
         bar(0.35)
+        # 计算各部件分别的功耗
+        unitsPowerData = export_units_power(powerDataOutputPath, outputRootPath)
+        bar(0.45)
         # 过滤出 session_app_usage_ 文件
         appUsageFiles = list(filter(filter_app_usage_fun, files))
-        bar(0.40)
-        outputRootPath = rootPath.replace(INPUT_FILE, OUTPUT_FILE)
+        bar(0.50)
         fileNum = len(appUsageFiles)
-        for idx, file in enumerate(appUsageFiles):
-            appUsageFilePath = os.path.join(rootPath, file)
-            AppUsageAnalyse.analyse(appUsageFilePath, powerDataOutputPath, outputRootPath)
-            bar(0.4 + (((idx + 1) * 1.0 / fileNum) * 0.6))
+        if fileNum == 0:
+            bar(1)
+            return
+        else:
+            for idx, file in enumerate(appUsageFiles):
+                appUsageFilePath = os.path.join(rootPath, file)
+                AppUsageAnalyse.analyse(appUsageFilePath, powerDataOutputPath, outputRootPath)
+                bar(0.5 + (((idx + 1) * 1.0 / fileNum) * 0.5))
 
 
 # 过滤app_usage文件
@@ -108,7 +113,49 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
             powerData.append(singleLine)
 
     if powerData:
-        ExcelUtil.write_to_excel(powerData, outputRootPath,  "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
+        ExcelUtil.write_to_excel(powerData, outputRootPath, CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
         return outputFilePath
 
     return ""
+
+
+# 输出功耗文件，并返回路径
+def export_units_power(powerDataPath: str, outputDir: str) -> str:
+    if not os.path.exists(powerDataPath):
+        JLog.e(__TAG, f"calculate_units_power failed: file from powerDataPath[{powerDataPath}] not exists, skipped.")
+        return ""
+
+    powerData = ExcelUtil.read_excel(powerDataPath, 1)
+    paramsData = ExcelUtil.read_excel(POWER_PARAMS_PATH, 2)
+    if not powerData.empty:
+        powerDataRows = powerData.shape[0]
+        powerDataCols = powerData.shape[1]
+        unitPowerData = []
+        for row in range(powerDataRows):
+            unitPower = []
+            for col in range(powerDataCols):
+                matrixData = powerData.iloc[row, col]
+                # 跳过时间戳
+                if col == 0:
+                    unitPower.append(matrixData)
+                    continue
+                else:
+                    theta = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col - 1])
+                    mu = float(paramsData.iloc[POWER_PARAMS_MU_IDX, col - 1])
+                    sigma = float(paramsData.iloc[POWER_PARAMS_SIGMA_IDX, col - 1])
+                    if sigma == 0:
+                        featureNormalizeVal = 0
+                    else:
+                        featureNormalizeVal = (float(matrixData) - mu) / sigma
+                    powerConsumption = featureNormalizeVal * theta
+                    unitPower.append(powerConsumption)
+            unitPowerData.append(unitPower)
+        if unitPowerData:
+            exportData = unitPowerData.copy()
+            exportData.insert(0, PP_HEADERS)
+            ExcelUtil.write_to_excel(exportData, outputDir, EXPORT_UNITS_POWER + EXCEL_SUFFIX)
+            return os.path.join(outputDir, EXPORT_UNITS_POWER + EXCEL_SUFFIX)
+        else:
+            return ""
+    else:
+        return ""

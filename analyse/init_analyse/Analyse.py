@@ -1,6 +1,7 @@
 import time
 
-from analyse.ParseActiveData import ACTIVE_ROOT_PATH, iter_files
+from analyse.init_analyse.ParseActiveData import iter_files
+from analyse.util.FilePathDefinition import ACTIVE_ROOT_PATH
 from util import JLog
 
 startTime = time.time()
