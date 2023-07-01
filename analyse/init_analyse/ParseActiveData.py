@@ -9,7 +9,8 @@ from analyse.init_analyse import AppUsageAnalyse
 from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
 from analyse.util.FilePathDefinition import INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
-    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
+    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS, \
+    CF_ACTIVITY_DIR
 from util import JLog, ExcelUtil
 
 warnings.filterwarnings('ignore')
@@ -89,74 +90,94 @@ def analyse_app_usage_file(input_root_path: str, app_usage_file_name: str, power
 
 # 合并所有power_data文件
 def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
-    outputRootPath = intputRootPath.replace(INPUT_FILE, OUTPUT_FILE)
-    if not os.path.exists(outputRootPath):
-        os.makedirs(outputRootPath)
+    try:
+        outputRootPath = intputRootPath.replace(INPUT_FILE, OUTPUT_FILE)
+        outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
+        if os.path.exists(outputFilePath):
+            JLog.i(__TAG, f"power file {StringUtil.get_short_file_name_for_print(outputFilePath)} already exist, skipped.")
+            return outputFilePath
 
-    outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
-    if os.path.exists(outputFilePath):
-        JLog.i(__TAG, f"power file {StringUtil.get_short_file_name_for_print(outputFilePath)} already exist, skipped.")
-        return outputFilePath
+        powerData = []
+        # 为了获取filter的长度
+        for fileName in fileNames:
+            absolutePath = os.path.join(intputRootPath, fileName)
+            # 文件可读
+            if os.access(absolutePath, os.R_OK):
+                data = pd.read_excel(absolutePath, header=None)
+                # 获取行数
+                rows = data.shape[0]
+                for lineNum in range(rows):
+                    # 跳过表头
+                    if lineNum == 0:
+                        continue
 
-    powerData = []
-    # 为了获取filter的长度
-    for fileName in fileNames:
-        absolutePath = os.path.join(intputRootPath, fileName)
-        data = pd.read_excel(absolutePath, header=None)
-        # 获取行数
-        rows = data.shape[0]
-        for lineNum in range(rows):
-            # 跳过表头
-            if lineNum == 0:
-                continue
+                    singleLine = data.iloc[lineNum]
+                    powerData.append(singleLine)
+            else:
+                JLog.d(__TAG, f"file[{fileName}] dir[{intputRootPath}] unreadable, skipped.")
 
-            singleLine = data.iloc[lineNum]
-            powerData.append(singleLine)
-
-    if powerData:
-        ExcelUtil.write_to_excel(powerData, outputRootPath, CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
-        return outputFilePath
-
+        if powerData:
+            ExcelUtil.write_to_excel(powerData, outputRootPath, CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
+            return outputFilePath
+    except Exception as e:
+        JLog.e(__TAG, f"merge_all_power_data err happens: e = {e}")
     return ""
 
 
 # 输出功耗文件，并返回路径
 def export_units_power(powerDataPath: str, outputDir: str) -> str:
-    if not os.path.exists(powerDataPath):
-        JLog.i(__TAG, f"export_units_power failed: file from powerDataPath[{powerDataPath}] not exists, skipped.")
+    if isinstance(powerDataPath, str) and powerDataPath == "" or (not os.path.exists(powerDataPath)):
+        JLog.e(__TAG, f"export_units_power failed: file from powerDataPath[{powerDataPath}] not exists, skipped.")
         return ""
 
-    powerData = ExcelUtil.read_excel(powerDataPath, 1)
-    paramsData = ExcelUtil.read_excel(POWER_PARAMS_PATH, 2)
-    if not powerData.empty:
-        powerDataRows = powerData.shape[0]
-        powerDataCols = powerData.shape[1]
-        unitPowerData = []
-        for row in range(powerDataRows):
-            unitPower = []
-            for col in range(powerDataCols):
-                matrixData = powerData.iloc[row, col]
-                # 跳过时间戳
-                if col == 0:
-                    unitPower.append(matrixData)
-                    continue
-                else:
-                    theta = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col - 1])
-                    mu = float(paramsData.iloc[POWER_PARAMS_MU_IDX, col - 1])
-                    sigma = float(paramsData.iloc[POWER_PARAMS_SIGMA_IDX, col - 1])
-                    if sigma == 0:
-                        featureNormalizeVal = 0
+    try:
+        outputFileName = EXPORT_UNITS_POWER + EXCEL_SUFFIX
+        unitAbsFileName = os.path.join(outputDir, outputFileName)
+        if os.path.exists(unitAbsFileName):
+            JLog.i(__TAG, f"power file {outputFileName} already exist, skipped.")
+            return unitAbsFileName
+
+        powerData = ExcelUtil.read_excel(powerDataPath, 1)
+        paramsData = ExcelUtil.read_excel(POWER_PARAMS_PATH, 2)
+        if not powerData.empty:
+            powerDataRows = powerData.shape[0]
+            powerDataCols = powerData.shape[1]
+            unitPowerData = []
+            for row in range(powerDataRows):
+                unitPower = []
+                for col in range(powerDataCols):
+                    matrixData = powerData.iloc[row, col]
+                    # 跳过时间戳
+                    if col == 0:
+                        unitPower.append(matrixData)
+                        continue
                     else:
-                        featureNormalizeVal = (float(matrixData) - mu) / sigma
-                    powerConsumption = featureNormalizeVal * theta
-                    unitPower.append(powerConsumption)
-            unitPowerData.append(unitPower)
-        if unitPowerData:
-            exportData = unitPowerData.copy()
-            exportData.insert(0, PP_HEADERS)
-            ExcelUtil.write_to_excel(exportData, outputDir, EXPORT_UNITS_POWER + EXCEL_SUFFIX)
-            return os.path.join(outputDir, EXPORT_UNITS_POWER + EXCEL_SUFFIX)
+                        theta = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col - 1])
+                        mu = float(paramsData.iloc[POWER_PARAMS_MU_IDX, col - 1])
+                        sigma = float(paramsData.iloc[POWER_PARAMS_SIGMA_IDX, col - 1])
+                        if sigma == 0:
+                            featureNormalizeVal = 0
+                        else:
+                            featureNormalizeVal = (float(matrixData) - mu) / sigma
+                        powerConsumption = featureNormalizeVal * theta
+                        unitPower.append(powerConsumption)
+                unitPowerData.append(unitPower)
+            if unitPowerData:
+                exportData = unitPowerData.copy()
+                exportData.insert(0, PP_HEADERS)
+                ExcelUtil.write_to_excel(exportData, outputDir, outputFileName)
+                return unitAbsFileName
+            else:
+                return ""
         else:
             return ""
-    else:
-        return ""
+    except Exception as e:
+        JLog.e(__TAG, f"export_units_power err, e = {e}")
+    return ""
+
+
+# USER_NAME = INPUT_FILE + "/13266826670"
+# activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
+# appUsageFile = activeRootPath + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)/session_app_usage_39899.xlsx"
+# longAppUsageFile = activeRootPath + "/20230513/20230513(13_05_57_720)$$20230513(13_06_07_938)/session_app_usage_10218.xlsx"
+# iter_files(activeRootPath + "/20230513")

@@ -9,6 +9,10 @@ __TAG = "ExcelUtil"
 
 
 def write_to_excel(data: [], outDir: str, fileName: str):
+    # 数据为空，跳过
+    if not data:
+        return
+
     if not os.path.exists(outDir):
         os.makedirs(outDir)
     detailUsageDF = pd.DataFrame(data)
@@ -18,7 +22,7 @@ def write_to_excel(data: [], outDir: str, fileName: str):
 # skipOrThrow: 1, skipped(default), 2, throws when error
 def read_excel(path: str, skipOrThrow: int = 1) -> DataFrame:
     if not (os.path.exists(path)):
-        JLog.e(__TAG, f"file[{path}] does not exist!")
+        JLog.e(__TAG, f"read_excel, file[{path}] does not exist!")
         if skipOrThrow == 1:
             return DataFrame()
         elif skipOrThrow == 2:

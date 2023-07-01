@@ -8,7 +8,7 @@ import warnings
 from pandas import DataFrame
 
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
-    EXPORT_SESSION_SUMMARY, PP_HEADERS
+    EXPORT_SESSION_SUMMARY, PP_HEADERS, INPUT_FILE, CF_ACTIVITY_DIR
 
 warnings.filterwarnings('ignore')
 
@@ -109,7 +109,7 @@ class AppDetailUsage:
         app_usages_headers.extend(unit_headers)
         return app_usages_headers
 
-    def add_unit_pw(self, unit_pw:[]):
+    def add_unit_pw(self, unit_pw: []):
         if len(unit_pw) < 27:
             JLog.i("AppDetailUsage", f"add_unit_pw failed: list [unit_pw] len {len(unit_pw)} less than 27, skipped.")
             return
@@ -141,7 +141,6 @@ class AppDetailUsage:
         self.units_mem_anonPages = unit_pw[25]
         self.units_mem_mapped = unit_pw[26]
         self.all_units_power = unit_pw
-
 
 
 # app 在一个session内使用的概览
@@ -213,7 +212,12 @@ class AppSummeryUsage:
         return [self.app_name, self.app_open_times, len(self.page_open_set), self.page_stay_longest_name,
                 self.page_stay_longest_duration, self.page_stay_shortest_name, self.page_stay_shortest_duration,
                 self.page_stay_longest_network, self.page_stay_shortest_network, self.app_stay_duration,
-                self.app_network_spent]
+                self.app_network_spent, self.units_screen_brightness, self.units_music_on, self.units_phone_ring,
+                self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network,  self.units_3g_network,
+                self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
+                self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3,
+                self.units_cpu4, self.units_cpu5, self.units_cpu6, self.units_cpu7, self.units_bluetooth, self.units_mem_available,
+                self.units_mem_active, self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped]
 
     # @staticmethod
     # def from_list(fromList: []):
@@ -230,9 +234,12 @@ class AppSummeryUsage:
 
     @staticmethod
     def excel_header() -> []:
-        return ["应用包名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
+        unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
+        app_summary_headers = ["应用包名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
                 "停留最短时间的页面", "最短页面停留的时长", "停留最长时间的页面消耗的流量", "停留最短时间的页面消耗的流量",
                 "APP累计停留时间", "APP累计消耗的流量"]
+        app_summary_headers.extend(unit_headers)
+        return app_summary_headers
 
 
 class SessionSummery:
@@ -409,23 +416,28 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
                 appSummaryUsage.units_music_on += unitMusicOn
                 appSummaryUsage.units_phone_ring += unitPhoneRing
                 appSummaryUsage.units_phone_off_hook += unitPhoneOffHook
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
+                appSummaryUsage.units_wifi_network += unitWifiNetwork
+                appSummaryUsage.units_2g_network += unit2gNetwork
+                appSummaryUsage.units_3g_network += unit3gNetwork
+                appSummaryUsage.units_4g_network += unit4gNetwork
+                appSummaryUsage.units_5g_network += unit5gNetwork
+                appSummaryUsage.units_other_network += unitOtherWork
+                appSummaryUsage.units_is_wifi_enable += unitIsWifiEnable
+                appSummaryUsage.units_network_speed += unitNetworkSpeed
+                appSummaryUsage.units_cpu0 += unitCpu0
+                appSummaryUsage.units_cpu1 += unitCpu1
+                appSummaryUsage.units_cpu2 += unitCpu2
+                appSummaryUsage.units_cpu3 += unitCpu3
+                appSummaryUsage.units_cpu4 += unitCpu4
+                appSummaryUsage.units_cpu5 += unitCpu5
+                appSummaryUsage.units_cpu6 += unitCpu6
+                appSummaryUsage.units_cpu7 += unitCpu7
+                appSummaryUsage.units_bluetooth += unitBluetooth
+                appSummaryUsage.units_mem_available += unitMemAvailable
+                appSummaryUsage.units_mem_active += unitMemActive
+                appSummaryUsage.units_mem_anonPages += unitMemAnonPages
+                appSummaryUsage.units_mem_dirty += unitMemDirty
+                appSummaryUsage.units_mem_mapped += unitMemMapped
                 # 累加app停留时间
                 appSummaryUsage.app_stay_duration += pageDuration
                 # 添加打开的页面
@@ -557,39 +569,42 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
 
 # noinspection DuplicatedCode
 def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: str, outputRootDir: str):
-    if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(appUsageFilePath)):
-        JLog.e(__TAG, f"appUsageFilePath: {StringUtil.get_short_file_name_for_print(appUsageFilePath)} "
-                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
-        return
-    else:
-        appUsageData = pd.read_excel(appUsageFilePath, header=None)
+    try:
+        if (not isinstance(appUsageFilePath, str)) or (not os.path.exists(appUsageFilePath)):
+            JLog.e(__TAG, f"analyse, appUsageFilePath: {StringUtil.get_short_file_name_for_print(appUsageFilePath)} "
+                          f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
+            return
+        else:
+            appUsageData = pd.read_excel(appUsageFilePath, header=None)
 
-    if (not isinstance(powerDataFilePath, str)) or (not os.path.exists(powerDataFilePath)):
-        JLog.i(__TAG, f"powerDataFilePath: {StringUtil.get_short_file_name_for_print(powerDataFilePath)} "
-                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
-        powerData = DataFrame()
-        # return
-    else:
-        powerData = pd.read_excel(powerDataFilePath, header=None)
+        if (not isinstance(powerDataFilePath, str)) or (not os.path.exists(powerDataFilePath)):
+            JLog.i(__TAG, f"analyse, powerDataFilePath: {StringUtil.get_short_file_name_for_print(powerDataFilePath)} "
+                          f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
+            powerData = DataFrame()
+            # return
+        else:
+            powerData = pd.read_excel(powerDataFilePath, header=None)
 
-    if (not isinstance(unitsPowerDataPath, str)) or (not os.path.exists(unitsPowerDataPath)):
-        JLog.i(__TAG, f"unitsPowerDataPath: {StringUtil.get_short_file_name_for_print(unitsPowerDataPath)} "
-                      f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
-        unitsPowerData = DataFrame()
-    else:
-        unitsPowerData = pd.read_excel(unitsPowerDataPath, header=None)
+        if (not isinstance(unitsPowerDataPath, str)) or (not os.path.exists(unitsPowerDataPath)):
+            JLog.i(__TAG, f"analyse unitsPowerDataPath: {StringUtil.get_short_file_name_for_print(unitsPowerDataPath)} "
+                          f"is not str or file does not exist, outputRootDir: {StringUtil.get_short_file_name_for_print(outputRootDir)}")
+            unitsPowerData = DataFrame()
+        else:
+            unitsPowerData = pd.read_excel(unitsPowerDataPath, header=None)
 
-    # 解析App使用详细数据
-    appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, unitsPowerData, outputRootDir)
+        # 解析App使用详细数据
+        appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, unitsPowerData, outputRootDir)
 
-    # 得到app使用概括
-    summaryUsages = __summarize_detail_usage(appDetailUsages, outputRootDir)
+        # 得到app使用概括
+        summaryUsages = __summarize_detail_usage(appDetailUsages, outputRootDir)
 
-    # 解析Session使用概括
-    startTime = appUsageData.iloc[0, __screen_on_time_idx]
-    appUsageDataRows = appUsageData.shape[0]
-    sessionDuration = appUsageData.iloc[appUsageDataRows - 1, __session_total_duration_idx]
-    __analyse_session_usage(summaryUsages, startTime, sessionDuration, outputRootDir)
+        # 解析Session使用概括
+        startTime = appUsageData.iloc[0, __screen_on_time_idx]
+        appUsageDataRows = appUsageData.shape[0]
+        sessionDuration = appUsageData.iloc[appUsageDataRows - 1, __session_total_duration_idx]
+        __analyse_session_usage(summaryUsages, startTime, sessionDuration, outputRootDir)
+    except Exception as e:
+        JLog.e(__TAG, f"analyse err happens: e = {e}")
 
     # 还是同一个app
     # if lastAppName == appName:
@@ -599,16 +614,17 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
     #         appClassMap[appPage] = classUseCount + 1
     #         appDetailUsages[appPage]
 
-
-# USER_NAME = "./" + INPUT_FILE + "/13266826670_三星"
+#
+# USER_NAME = INPUT_FILE + "/13266826670"
 # activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
 # appUsageFile = activeRootPath + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)/session_app_usage_39899.xlsx"
-# longAppUsageFile = activeRootPath + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)/session_app_usage_1739224.xlsx"
+# longAppUsageFile = activeRootPath + "/20230513/20230513(13_05_57_720)$$20230513(13_06_07_938)/session_app_usage_10218.xlsx"
 #
 # outputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(17_34_11_713)$$20230405(17_34_51_612)"
 # powerFile = outputDir + "/session_power_usage.xlsx"
 #
-# longOutputDir = "./output/13266826670_三星/" + CF_ACTIVITY_DIR + "/20230405/20230405(19_14_11_149)$$20230405(19_43_10_373)"
+# longOutputDir = "./output/13266826670/" + CF_ACTIVITY_DIR + "/20230513/20230513(13_05_57_720)$$20230513(13_06_07_938)"
 # longPowerFile = longOutputDir + "/session_power_usage.xlsx"
 # # analyse(appUsageFile, powerFile, outputDir)
-# analyse(longAppUsageFile, longPowerFile, longOutputDir)
+# analyse(longAppUsageFile, longPowerFile, "", longOutputDir)
+#
