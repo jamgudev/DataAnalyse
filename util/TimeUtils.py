@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from util import JLog
@@ -54,3 +55,27 @@ def time_duration_with_mills(end_time: str, start_time: str) -> int:
         start_time = tryEndTime
 
     return int(end_time) - int(start_time)
+
+
+def get_today_of_date() -> str:
+    today = datetime.date.today()
+    return today.strftime("%Y%m%d")
+
+
+# 传进来的时间字符串格式至少为20170203，否则会返回false，甚至报格式错误
+# print(compare_is_same_day("20170203(17_24_39)", "2017020"))
+def compare_is_same_day(time_a: str, time_b: str) -> bool:
+    # 获取一般日期的长度
+    supportLen = len(get_today_of_date())
+    if (not isinstance(time_a, str)) or len(time_a) < supportLen \
+            or (not isinstance(time_b, str)) or len(time_b) < supportLen:
+        JLog.e(__TAG, f"compare_is_same_day failed, len of time_a[{time_a}] or time_b[{time_b}] not greater than {supportLen}.")
+        return False
+
+    a = time_a[0:supportLen]
+    b = time_b[0:supportLen]
+    pattern = '%Y%m%d'
+
+    return time.mktime(time.strptime(a, pattern)) == time.mktime(time.strptime(b, pattern))
+
+

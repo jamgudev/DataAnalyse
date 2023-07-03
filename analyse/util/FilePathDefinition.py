@@ -10,7 +10,7 @@ CF_CHARGE_DIR = CF_ROOT + "/charge_record"
 USER_NAME = INPUT_FILE + "/13266826670"
 ACTIVE_ROOT_PATH = USER_NAME + "/" + CF_ACTIVITY_DIR
 
-CF_SESSION_PREFIX = "session"
+CF_SESSION_PREFIX = "graph"
 CF_OUTPUT_POWER_USAGE = "session_power_usage"
 EXCEL_SUFFIX = ".xlsx"
 

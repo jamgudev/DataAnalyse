@@ -213,7 +213,7 @@ class AppSummeryUsage:
                 self.page_stay_longest_duration, self.page_stay_shortest_name, self.page_stay_shortest_duration,
                 self.page_stay_longest_network, self.page_stay_shortest_network, self.app_stay_duration,
                 self.app_network_spent, self.units_screen_brightness, self.units_music_on, self.units_phone_ring,
-                self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network,  self.units_3g_network,
+                self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network, self.units_3g_network,
                 self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
                 self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3,
                 self.units_cpu4, self.units_cpu5, self.units_cpu6, self.units_cpu7, self.units_bluetooth, self.units_mem_available,
@@ -236,10 +236,38 @@ class AppSummeryUsage:
     def excel_header() -> []:
         unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
         app_summary_headers = ["应用包名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
-                "停留最短时间的页面", "最短页面停留的时长", "停留最长时间的页面消耗的流量", "停留最短时间的页面消耗的流量",
-                "APP累计停留时间", "APP累计消耗的流量"]
+                               "停留最短时间的页面", "最短页面停留的时长", "停留最长时间的页面消耗的流量", "停留最短时间的页面消耗的流量",
+                               "APP累计停留时间", "APP累计消耗的流量"]
         app_summary_headers.extend(unit_headers)
         return app_summary_headers
+
+    def add_up_units_power(self, detailUsage: AppDetailUsage):
+        self.units_screen_brightness += detailUsage.units_screen_brightness
+        self.units_music_on += detailUsage.units_music_on
+        self.units_phone_ring += detailUsage.units_phone_ring
+        self.units_phone_off_hook += detailUsage.units_phone_off_hook
+        self.units_wifi_network += detailUsage.units_wifi_network
+        self.units_2g_network += detailUsage.units_2g_network
+        self.units_3g_network += detailUsage.units_3g_network
+        self.units_4g_network += detailUsage.units_4g_network
+        self.units_5g_network += detailUsage.units_5g_network
+        self.units_other_network += detailUsage.units_other_network
+        self.units_is_wifi_enable += detailUsage.units_is_wifi_enable
+        self.units_network_speed += detailUsage.units_network_speed
+        self.units_cpu0 += detailUsage.units_cpu0
+        self.units_cpu1 += detailUsage.units_cpu1
+        self.units_cpu2 += detailUsage.units_cpu2
+        self.units_cpu3 += detailUsage.units_cpu3
+        self.units_cpu4 += detailUsage.units_cpu4
+        self.units_cpu5 += detailUsage.units_cpu5
+        self.units_cpu6 += detailUsage.units_cpu6
+        self.units_cpu7 += detailUsage.units_cpu7
+        self.units_bluetooth += detailUsage.units_bluetooth
+        self.units_mem_available += detailUsage.units_mem_available
+        self.units_mem_active += detailUsage.units_mem_active
+        self.units_mem_anonPages += detailUsage.units_mem_anonPages
+        self.units_mem_dirty += detailUsage.units_mem_dirty
+        self.units_mem_mapped += detailUsage.units_mem_mapped
 
 
 class SessionSummery:
@@ -258,22 +286,96 @@ class SessionSummery:
     # app_stay_shortest_duration        session期间在某个APP停留的最短时间
     # app_stay_longest_network          使用最久的APP所消耗的流量
     # app_stay_shortest_network         使用最短的APP所消耗的流量
-    def __init__(self,
-                 app_open_set: set,
-                 app_page_open_set: set,
-                 session_start_time: str,
-                 session_duration: int,
-                 session_network_spent: float,
-                 app_open_most_frequently_name: str,
-                 app_open_most_frequently_times: int,
-                 app_open_least_frequently_name: str,
-                 app_open_least_frequently_times: int,
-                 app_stay_longest_name: str,
-                 app_stay_longest_duration: int,
-                 app_stay_shortest_name: str,
-                 app_stay_shortest_duration: int,
-                 app_stay_longest_network: float,
-                 app_stay_shortest_network: float):
+    def __init__(self):
+        self.app_open_set = set()
+        self.app_page_open_set = set()
+        self.session_start_time = ""
+        self.session_duration = 0
+        self.session_network_spent = 0.0
+        self.app_open_most_frequently_name = ""
+        self.app_open_most_frequently_times = 0
+        self.app_open_least_frequently_name = ""
+        self.app_open_least_frequently_times = 0
+        self.app_stay_longest_name = ""
+        self.app_stay_longest_duration = 0
+        self.app_stay_shortest_name = ""
+        self.app_stay_shortest_duration = 0
+        self.app_stay_longest_network = 0.0
+        self.app_stay_shortest_network = 0.0
+        self.units_screen_brightness = 0.0
+        self.units_music_on = 0.0
+        self.units_phone_ring = 0.0
+        self.units_phone_off_hook = 0.0
+        self.units_wifi_network = 0.0
+        self.units_2g_network = 0.0
+        self.units_3g_network = 0.0
+        self.units_4g_network = 0.0
+        self.units_5g_network = 0.0
+        self.units_other_network = 0.0
+        self.units_is_wifi_enable = 0.0
+        self.units_network_speed = 0.0
+        self.units_cpu0 = 0.0
+        self.units_cpu1 = 0.0
+        self.units_cpu2 = 0.0
+        self.units_cpu3 = 0.0
+        self.units_cpu4 = 0.0
+        self.units_cpu5 = 0.0
+        self.units_cpu6 = 0.0
+        self.units_cpu7 = 0.0
+        self.units_bluetooth = 0.0
+        self.units_mem_available = 0.0
+        self.units_mem_active = 0.0
+        self.units_mem_dirty = 0.0
+        self.units_mem_anonPages = 0.0
+        self.units_mem_mapped = 0.0
+        self.all_units_power = []
+
+    def to_excel_list(self) -> []:
+        return [len(self.app_open_set), len(self.app_page_open_set), self.session_start_time, self.session_duration,
+                self.session_network_spent, self.app_open_most_frequently_name, self.app_open_most_frequently_times,
+                self.app_open_least_frequently_name, self.app_open_least_frequently_times, self.app_stay_longest_name,
+                self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
+                self.app_stay_longest_network, self.app_stay_shortest_network, self.units_screen_brightness,
+                self.units_music_on, self.units_phone_ring, self.units_phone_off_hook, self.units_wifi_network,
+                self.units_2g_network, self.units_3g_network, self.units_4g_network, self.units_5g_network,
+                self.units_other_network, self.units_is_wifi_enable, self.units_network_speed, self.units_cpu0,
+                self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4, self.units_cpu5, self.units_cpu6,
+                self.units_cpu7, self.units_bluetooth, self.units_mem_available, self.units_mem_active, self.units_mem_dirty,
+                self.units_mem_anonPages, self.units_mem_mapped]
+
+    @staticmethod
+    def empty_session(start_time: str, duration: int):
+        session = SessionSummery()
+        session.set_app_usage(set(), set(), start_time, duration, 0, "", 0, "", 0, "", 0, "", 0, 0, 0)
+        return session
+
+    @staticmethod
+    def excel_header() -> []:
+        unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
+        headers = ["session期间不同App打开数量", "session期间不同页面打开数量", "session开始时间", "session持续时间",
+                "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
+                "同个app被打开最少的次数", "session期间使用最久的App名", "session期间在某个APP停留的最长时间",
+                "session期间使用时间最短的App名", "session期间在某个APP停留的最短时间", "使用最久的APP所消耗的流量",
+                "使用最短的APP所消耗的流量"]
+        headers.extend(unit_headers)
+        return headers
+
+    def set_app_usage(self,
+                      app_open_set: set,
+                      app_page_open_set: set,
+                      session_start_time: str,
+                      session_duration: int,
+                      session_network_spent: float,
+                      app_open_most_frequently_name: str,
+                      app_open_most_frequently_times: int,
+                      app_open_least_frequently_name: str,
+                      app_open_least_frequently_times: int,
+                      app_stay_longest_name: str,
+                      app_stay_longest_duration: int,
+                      app_stay_shortest_name: str,
+                      app_stay_shortest_duration: int,
+                      app_stay_longest_network: float,
+                      app_stay_shortest_network: float):
         self.app_open_set = app_open_set
         self.app_page_open_set = app_page_open_set
         self.session_start_time = session_start_time
@@ -290,26 +392,33 @@ class SessionSummery:
         self.app_stay_longest_network = app_stay_longest_network
         self.app_stay_shortest_network = app_stay_shortest_network
 
-    def to_excel_list(self) -> []:
-        return [len(self.app_open_set), len(self.app_page_open_set), self.session_start_time, self.session_duration,
-                self.session_network_spent, self.app_open_most_frequently_name, self.app_open_most_frequently_times,
-                self.app_open_least_frequently_name, self.app_open_least_frequently_times, self.app_stay_longest_name,
-                self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
-                self.app_stay_longest_network, self.app_stay_shortest_network]
-
-    @staticmethod
-    def empty_session(start_time: str, duration: int):
-        session = SessionSummery(set(), set(), start_time, duration, 0, "", 0, "",
-                                 0, "", 0, "", 0, 0, 0)
-        return session
-
-    @staticmethod
-    def excel_header() -> []:
-        return ["session期间不同App打开数量", "session期间不同页面打开数量", "session开始时间", "session持续时间",
-                "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
-                "同个app被打开最少的次数", "session期间使用最久的App名", "session期间在某个APP停留的最长时间",
-                "session期间使用时间最短的App名", "session期间在某个APP停留的最短时间", "使用最久的APP所消耗的流量",
-                "使用最短的APP所消耗的流量"]
+    def add_up_units_power(self, summaryUsage: AppSummeryUsage):
+        self.units_screen_brightness += summaryUsage.units_screen_brightness
+        self.units_music_on += summaryUsage.units_music_on
+        self.units_phone_ring += summaryUsage.units_phone_ring
+        self.units_phone_off_hook += summaryUsage.units_phone_off_hook
+        self.units_wifi_network += summaryUsage.units_wifi_network
+        self.units_2g_network += summaryUsage.units_2g_network
+        self.units_3g_network += summaryUsage.units_3g_network
+        self.units_4g_network += summaryUsage.units_4g_network
+        self.units_5g_network += summaryUsage.units_5g_network
+        self.units_other_network += summaryUsage.units_other_network
+        self.units_is_wifi_enable += summaryUsage.units_is_wifi_enable
+        self.units_network_speed += summaryUsage.units_network_speed
+        self.units_cpu0 += summaryUsage.units_cpu0
+        self.units_cpu1 += summaryUsage.units_cpu1
+        self.units_cpu2 += summaryUsage.units_cpu2
+        self.units_cpu3 += summaryUsage.units_cpu3
+        self.units_cpu4 += summaryUsage.units_cpu4
+        self.units_cpu5 += summaryUsage.units_cpu5
+        self.units_cpu6 += summaryUsage.units_cpu6
+        self.units_cpu7 += summaryUsage.units_cpu7
+        self.units_bluetooth += summaryUsage.units_bluetooth
+        self.units_mem_available += summaryUsage.units_mem_available
+        self.units_mem_active += summaryUsage.units_mem_active
+        self.units_mem_anonPages += summaryUsage.units_mem_anonPages
+        self.units_mem_dirty += summaryUsage.units_mem_dirty
+        self.units_mem_mapped += summaryUsage.units_mem_mapped
 
     # @staticmethod
     # def from_list(fromList: []):
@@ -378,32 +487,6 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
             networkSpent = detailUsage.network_spent
             pageName = detailUsage.page_name
             pageDuration = detailUsage.duration
-            unitScreenBrightness = detailUsage.units_screen_brightness
-            unitMusicOn = detailUsage.units_music_on
-            unitPhoneRing = detailUsage.units_phone_ring
-            unitPhoneOffHook = detailUsage.units_phone_off_hook
-            unitWifiNetwork = detailUsage.units_wifi_network
-            unit2gNetwork = detailUsage.units_2g_network
-            unit3gNetwork = detailUsage.units_3g_network
-            unit4gNetwork = detailUsage.units_4g_network
-            unit5gNetwork = detailUsage.units_5g_network
-            unitOtherWork = detailUsage.units_other_network
-            unitIsWifiEnable = detailUsage.units_is_wifi_enable
-            unitNetworkSpeed = detailUsage.units_network_speed
-            unitCpu0 = detailUsage.units_cpu0
-            unitCpu1 = detailUsage.units_cpu1
-            unitCpu2 = detailUsage.units_cpu2
-            unitCpu3 = detailUsage.units_cpu3
-            unitCpu4 = detailUsage.units_cpu4
-            unitCpu5 = detailUsage.units_cpu5
-            unitCpu6 = detailUsage.units_cpu6
-            unitCpu7 = detailUsage.units_cpu7
-            unitBluetooth = detailUsage.units_bluetooth
-            unitMemAvailable = detailUsage.units_mem_available
-            unitMemActive = detailUsage.units_mem_active
-            unitMemAnonPages = detailUsage.units_mem_anonPages
-            unitMemDirty = detailUsage.units_mem_dirty
-            unitMemMapped = detailUsage.units_mem_mapped
             if appName in appSummaryUsagesDict:
                 appSummaryUsage = appSummaryUsagesDict.get(appName)
                 # 如果上一个打开的app不是这个app，说明又打开了一次
@@ -412,32 +495,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
                 # 累加流量消耗
                 appSummaryUsage.app_network_spent += networkSpent
                 # 累加部件功耗
-                appSummaryUsage.units_screen_brightness += unitScreenBrightness
-                appSummaryUsage.units_music_on += unitMusicOn
-                appSummaryUsage.units_phone_ring += unitPhoneRing
-                appSummaryUsage.units_phone_off_hook += unitPhoneOffHook
-                appSummaryUsage.units_wifi_network += unitWifiNetwork
-                appSummaryUsage.units_2g_network += unit2gNetwork
-                appSummaryUsage.units_3g_network += unit3gNetwork
-                appSummaryUsage.units_4g_network += unit4gNetwork
-                appSummaryUsage.units_5g_network += unit5gNetwork
-                appSummaryUsage.units_other_network += unitOtherWork
-                appSummaryUsage.units_is_wifi_enable += unitIsWifiEnable
-                appSummaryUsage.units_network_speed += unitNetworkSpeed
-                appSummaryUsage.units_cpu0 += unitCpu0
-                appSummaryUsage.units_cpu1 += unitCpu1
-                appSummaryUsage.units_cpu2 += unitCpu2
-                appSummaryUsage.units_cpu3 += unitCpu3
-                appSummaryUsage.units_cpu4 += unitCpu4
-                appSummaryUsage.units_cpu5 += unitCpu5
-                appSummaryUsage.units_cpu6 += unitCpu6
-                appSummaryUsage.units_cpu7 += unitCpu7
-                appSummaryUsage.units_bluetooth += unitBluetooth
-                appSummaryUsage.units_mem_available += unitMemAvailable
-                appSummaryUsage.units_mem_active += unitMemActive
-                appSummaryUsage.units_mem_anonPages += unitMemAnonPages
-                appSummaryUsage.units_mem_dirty += unitMemDirty
-                appSummaryUsage.units_mem_mapped += unitMemMapped
+                appSummaryUsage.add_up_units_power(detailUsage)
                 # 累加app停留时间
                 appSummaryUsage.app_stay_duration += pageDuration
                 # 添加打开的页面
@@ -460,6 +518,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
                                                   pageName, pageDuration, pageName,
                                                   pageDuration, networkSpent, networkSpent,
                                                   pageDuration, networkSpent)
+                appSummaryUsage.add_up_units_power(detailUsage)
                 appSummaryUsagesDict[appName] = appSummaryUsage
 
             lastAppName = appName
@@ -528,6 +587,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
         appStayShortestDuration = 0
         appStayLongestNetworkSpent = 0.0
         appStayShortestNetworkSpent = 0.0
+        sessionUsage = SessionSummery()
         for summaryUsage in tempSummaryUsages:
             appName = summaryUsage.app_name
             pageOpenSet = summaryUsage.page_open_set
@@ -553,12 +613,13 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
                 appStayShortestName = appName
                 appStayShortestDuration = stayDuration
                 appStayShortestNetworkSpent = appNetWorkSpent
-
-        sessionUsage = SessionSummery(appOpenSet, appPageOpenSet, startTime, sessionDuration, sessionNetworkSpent,
-                                      appOpenMostFrequentlyName, appOpenMostFrequentlyTimes, appOpenLessFrequentlyName,
-                                      appOpenLessFrequentlyTimes, appStayLongestName, appStayLongestDuration,
-                                      appStayShortestName, appStayShortestDuration, appStayLongestNetworkSpent,
-                                      appStayShortestNetworkSpent)
+            # 累加部件功耗
+            sessionUsage.add_up_units_power(summaryUsage)
+        sessionUsage.set_app_usage(appOpenSet, appPageOpenSet, startTime, sessionDuration, sessionNetworkSpent,
+                                   appOpenMostFrequentlyName, appOpenMostFrequentlyTimes, appOpenLessFrequentlyName,
+                                   appOpenLessFrequentlyTimes, appStayLongestName, appStayLongestDuration,
+                                   appStayShortestName, appStayShortestDuration, appStayLongestNetworkSpent,
+                                   appStayShortestNetworkSpent)
     else:
         sessionUsage = SessionSummery.empty_session(startTime, sessionDuration)
 

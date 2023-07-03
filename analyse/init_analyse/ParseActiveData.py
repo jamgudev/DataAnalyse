@@ -9,8 +9,7 @@ from analyse.init_analyse import AppUsageAnalyse
 from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
 from analyse.util.FilePathDefinition import INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
-    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS, \
-    CF_ACTIVITY_DIR
+    EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
 from util import JLog, ExcelUtil
 
 warnings.filterwarnings('ignore')
