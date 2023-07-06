@@ -2,13 +2,12 @@ import os.path
 
 import pandas as pd
 
-from analyse.util import StringUtil
-from util import TimeUtils, ExcelUtil, JLog
+from util import TimeUtils, ExcelUtil, JLog, StringUtil
 import warnings
 from pandas import DataFrame
 
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
-    EXPORT_SESSION_SUMMARY, PP_HEADERS, INPUT_FILE, CF_ACTIVITY_DIR
+    EXPORT_SESSION_SUMMARY, PP_HEADERS
 
 warnings.filterwarnings('ignore')
 
@@ -83,6 +82,7 @@ class AppDetailUsage:
         self.units_mem_dirty = 0.0
         self.units_mem_anonPages = 0.0
         self.units_mem_mapped = 0.0
+        self.total_power_consumption = 0.0
         self.all_units_power = []
 
     def to_excel_list(self) -> []:
@@ -91,7 +91,7 @@ class AppDetailUsage:
                 self.units_3g_network, self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
                 self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4,
                 self.units_cpu5, self.units_cpu6, self.units_cpu7, self.units_bluetooth, self.units_mem_available, self.units_mem_active,
-                self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped]
+                self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped, self.total_power_consumption]
 
     @staticmethod
     def from_list(detailUsageList: []):
@@ -109,38 +109,39 @@ class AppDetailUsage:
         app_usages_headers.extend(unit_headers)
         return app_usages_headers
 
-    def add_unit_pw(self, unit_pw: []):
-        if len(unit_pw) < 27:
-            JLog.i("AppDetailUsage", f"add_unit_pw failed: list [unit_pw] len {len(unit_pw)} less than 27, skipped.")
+    def add_unit_pw(self, unit_pws: []):
+        if len(unit_pws) < 28:
+            JLog.i("AppDetailUsage", f"add_unit_pw failed: list [unit_pw] len {len(unit_pws)} less than 27, skipped.")
             return
         # 跳过第一个，是时间戳
-        self.units_screen_brightness = unit_pw[1]
-        self.units_music_on = unit_pw[2]
-        self.units_phone_ring = unit_pw[3]
-        self.units_phone_off_hook = unit_pw[4]
-        self.units_wifi_network = unit_pw[5]
-        self.units_2g_network = unit_pw[6]
-        self.units_3g_network = unit_pw[7]
-        self.units_4g_network = unit_pw[8]
-        self.units_5g_network = unit_pw[9]
-        self.units_other_network = unit_pw[10]
-        self.units_is_wifi_enable = unit_pw[11]
-        self.units_network_speed = unit_pw[12]
-        self.units_cpu0 = unit_pw[13]
-        self.units_cpu1 = unit_pw[14]
-        self.units_cpu2 = unit_pw[15]
-        self.units_cpu3 = unit_pw[16]
-        self.units_cpu4 = unit_pw[17]
-        self.units_cpu5 = unit_pw[18]
-        self.units_cpu6 = unit_pw[19]
-        self.units_cpu7 = unit_pw[20]
-        self.units_bluetooth = unit_pw[21]
-        self.units_mem_available = unit_pw[22]
-        self.units_mem_active = unit_pw[23]
-        self.units_mem_dirty = unit_pw[24]
-        self.units_mem_anonPages = unit_pw[25]
-        self.units_mem_mapped = unit_pw[26]
-        self.all_units_power = unit_pw
+        self.units_screen_brightness = unit_pws[1]
+        self.units_music_on = unit_pws[2]
+        self.units_phone_ring = unit_pws[3]
+        self.units_phone_off_hook = unit_pws[4]
+        self.units_wifi_network = unit_pws[5]
+        self.units_2g_network = unit_pws[6]
+        self.units_3g_network = unit_pws[7]
+        self.units_4g_network = unit_pws[8]
+        self.units_5g_network = unit_pws[9]
+        self.units_other_network = unit_pws[10]
+        self.units_is_wifi_enable = unit_pws[11]
+        self.units_network_speed = unit_pws[12]
+        self.units_cpu0 = unit_pws[13]
+        self.units_cpu1 = unit_pws[14]
+        self.units_cpu2 = unit_pws[15]
+        self.units_cpu3 = unit_pws[16]
+        self.units_cpu4 = unit_pws[17]
+        self.units_cpu5 = unit_pws[18]
+        self.units_cpu6 = unit_pws[19]
+        self.units_cpu7 = unit_pws[20]
+        self.units_bluetooth = unit_pws[21]
+        self.units_mem_available = unit_pws[22]
+        self.units_mem_active = unit_pws[23]
+        self.units_mem_dirty = unit_pws[24]
+        self.units_mem_anonPages = unit_pws[25]
+        self.units_mem_mapped = unit_pws[26]
+        self.total_power_consumption += unit_pws[27]
+        self.all_units_power = unit_pws
 
 
 # app 在一个session内使用的概览
@@ -206,6 +207,7 @@ class AppSummeryUsage:
         self.units_mem_dirty = 0.0
         self.units_mem_anonPages = 0.0
         self.units_mem_mapped = 0.0
+        self.total_power_consumption = 0.0
         self.all_units_power = []
 
     def to_excel_list(self) -> []:
@@ -217,7 +219,8 @@ class AppSummeryUsage:
                 self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
                 self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3,
                 self.units_cpu4, self.units_cpu5, self.units_cpu6, self.units_cpu7, self.units_bluetooth, self.units_mem_available,
-                self.units_mem_active, self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped]
+                self.units_mem_active, self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped,
+                self.total_power_consumption]
 
     # @staticmethod
     # def from_list(fromList: []):
@@ -268,6 +271,36 @@ class AppSummeryUsage:
         self.units_mem_anonPages += detailUsage.units_mem_anonPages
         self.units_mem_dirty += detailUsage.units_mem_dirty
         self.units_mem_mapped += detailUsage.units_mem_mapped
+        self.total_power_consumption += detailUsage.total_power_consumption
+
+    # def __get_total_power_consumption(self):
+    #     total = self.units_screen_brightness
+    #     total += self.units_music_on
+    #     total += self.units_phone_ring
+    #     total += self.units_phone_off_hook
+    #     total += self.units_wifi_network
+    #     total += self.units_2g_network
+    #     total += self.units_3g_network
+    #     total += self.units_4g_network
+    #     total += self.units_5g_network
+    #     total += self.units_other_network
+    #     total += self.units_is_wifi_enable
+    #     total += self.units_network_speed
+    #     total += self.units_cpu0
+    #     total += self.units_cpu1
+    #     total += self.units_cpu2
+    #     total += self.units_cpu3
+    #     total += self.units_cpu4
+    #     total += self.units_cpu5
+    #     total += self.units_cpu6
+    #     total += self.units_cpu7
+    #     total += self.units_bluetooth
+    #     total += self.units_mem_available
+    #     total += self.units_mem_active
+    #     total += self.units_mem_anonPages
+    #     total += self.units_mem_dirty
+    #     total += self.units_mem_mapped
+    #     self.total_power_consumption = total
 
 
 class SessionSummery:
@@ -328,6 +361,7 @@ class SessionSummery:
         self.units_mem_dirty = 0.0
         self.units_mem_anonPages = 0.0
         self.units_mem_mapped = 0.0
+        self.total_power_consumption = 0.0
         self.all_units_power = []
 
     def to_excel_list(self) -> []:
@@ -341,7 +375,7 @@ class SessionSummery:
                 self.units_other_network, self.units_is_wifi_enable, self.units_network_speed, self.units_cpu0,
                 self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4, self.units_cpu5, self.units_cpu6,
                 self.units_cpu7, self.units_bluetooth, self.units_mem_available, self.units_mem_active, self.units_mem_dirty,
-                self.units_mem_anonPages, self.units_mem_mapped]
+                self.units_mem_anonPages, self.units_mem_mapped, self.total_power_consumption]
 
     @staticmethod
     def empty_session(start_time: str, duration: int):
@@ -419,6 +453,8 @@ class SessionSummery:
         self.units_mem_anonPages += summaryUsage.units_mem_anonPages
         self.units_mem_dirty += summaryUsage.units_mem_dirty
         self.units_mem_mapped += summaryUsage.units_mem_mapped
+        self.total_power_consumption += summaryUsage.total_power_consumption
+        # self.__get_total_power_consumption()
 
     # @staticmethod
     # def from_list(fromList: []):
@@ -429,6 +465,10 @@ class SessionSummery:
     #             fromList[8], fromList[9], fromList[10], fromList[11],
     #             fromList[12], fromList[13], fromList[14])
     #         return summaryUsage
+
+
+# class EveryDaySummery:
+#     def __init__(self):
 
 
 def get_page_network_spent(powerData: DataFrame, pageStartTime: str, pageEndTime: str):

@@ -62,6 +62,15 @@ def get_today_of_date() -> str:
     return today.strftime("%Y%m%d")
 
 
+def get_day_of_date_str(date: str) -> str:
+    supportLen = len(get_today_of_date())
+    if (not isinstance(date, str)) or len(date) < supportLen:
+        JLog.e(__TAG, f"compare_is_same_day failed, len of time_a[{date}] not longer than {supportLen}.")
+        return ""
+    else:
+        return date[0:supportLen]
+
+
 # 传进来的时间字符串格式至少为20170203，否则会返回false，甚至报格式错误
 # print(compare_is_same_day("20170203(17_24_39)", "2017020"))
 def compare_is_same_day(time_a: str, time_b: str) -> bool:
@@ -69,7 +78,7 @@ def compare_is_same_day(time_a: str, time_b: str) -> bool:
     supportLen = len(get_today_of_date())
     if (not isinstance(time_a, str)) or len(time_a) < supportLen \
             or (not isinstance(time_b, str)) or len(time_b) < supportLen:
-        JLog.e(__TAG, f"compare_is_same_day failed, len of time_a[{time_a}] or time_b[{time_b}] not greater than {supportLen}.")
+        JLog.e(__TAG, f"compare_is_same_day failed, len of time_a[{time_a}] or time_b[{time_b}] not longer than {supportLen}.")
         return False
 
     a = time_a[0:supportLen]

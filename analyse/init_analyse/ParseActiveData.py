@@ -6,11 +6,10 @@ import pandas as pd
 from alive_progress import alive_bar
 
 from analyse.init_analyse import AppUsageAnalyse
-from analyse.util import StringUtil
 from analyse.util.AnalyseUtils import filter_file_fun
 from analyse.util.FilePathDefinition import INPUT_FILE, OUTPUT_FILE, CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX, POWER_PARAMS_PATH, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS
-from util import JLog, ExcelUtil
+from util import JLog, ExcelUtil, StringUtil
 
 warnings.filterwarnings('ignore')
 
@@ -144,6 +143,7 @@ def export_units_power(powerDataPath: str, outputDir: str) -> str:
             unitPowerData = []
             for row in range(powerDataRows):
                 unitPower = []
+                totalPower = 0.0
                 for col in range(powerDataCols):
                     matrixData = powerData.iloc[row, col]
                     # 跳过时间戳
@@ -159,7 +159,9 @@ def export_units_power(powerDataPath: str, outputDir: str) -> str:
                         else:
                             featureNormalizeVal = (float(matrixData) - mu) / sigma
                         powerConsumption = featureNormalizeVal * theta
+                        totalPower += powerConsumption
                         unitPower.append(powerConsumption)
+                unitPower.append(totalPower)
                 unitPowerData.append(unitPower)
             if unitPowerData:
                 exportData = unitPowerData.copy()

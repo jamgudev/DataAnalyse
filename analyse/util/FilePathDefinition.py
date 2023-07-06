@@ -1,5 +1,9 @@
-INPUT_FILE = "./input"
-OUTPUT_FILE = "./output"
+import os.path
+
+# ../analyse 这个目录
+rootDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INPUT_FILE = rootDir + "/input"
+OUTPUT_FILE = rootDir + "/output"
 
 CF_ROOT = "HWStatistics"
 CF_DEBUG_DIR = CF_ROOT + "/debug_record"
@@ -56,4 +60,4 @@ PP_MEM_MEM_MAPPED_IDX = 26
 PP_HEADERS = ["time_stamp", "screen_brightness", "music_on", "phone_ring", "phone_off_hook", "wifi_network",
               "2g_network", "3g_network", "4g_network", "5g_network", "other_network", "is_wifi_enable",
               "network_speed", "cpu0", "cpu1", "cpu2", "cpu3", "cpu4", "cpu5", "cpu6", "cpu7", "bluetooth",
-              "mem_available", "mem_active", "mem_dirty", "mem_anonPages", "mem_mapped"]
+              "mem_available", "mem_active", "mem_dirty", "mem_anonPages", "mem_mapped", "总功耗"]
