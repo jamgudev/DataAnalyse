@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 # -*- coding:utf-8 -*-
@@ -36,4 +37,4 @@ def t(tag: str, msg: str):
 
 
 def __print(tag: str, msg: str, color: __Color):
-    print(f"\033[{color.value}m[{tag}]:::>> {msg}\033[{color.value}m\033[0m\033[0m")
+    print(f"\033[{color.value}m[{tag}][{os.getpid()}]:::>> {msg}\033[{color.value}m\033[0m\033[0m")

@@ -2,17 +2,17 @@ import os.path
 
 # ../analyse 这个目录
 rootDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUT_FILE = rootDir + "/input"
-OUTPUT_FILE = rootDir + "/output"
+INPUT = "input"
+OUTPUT = "output"
+INPUT_FILE = rootDir + "/" + INPUT
+TEST_INPUT_FILE = rootDir + "/test/" + INPUT
+OUTPUT_FILE = rootDir + "/" + OUTPUT
 
 CF_ROOT = "HWStatistics"
 CF_DEBUG_DIR = CF_ROOT + "/debug_record"
 CF_INFO_DIR = CF_ROOT + "/info_record"
 CF_ACTIVITY_DIR = CF_ROOT + "/active"
 CF_CHARGE_DIR = CF_ROOT + "/charge_record"
-
-USER_NAME = INPUT_FILE + "/13266826670"
-ACTIVE_ROOT_PATH = USER_NAME + "/" + CF_ACTIVITY_DIR
 
 CF_SESSION_PREFIX = "graph"
 CF_OUTPUT_POWER_USAGE = "session_power_usage"
@@ -26,7 +26,6 @@ EXPORT_UNITS_POWER = "units_power_usage"
 
 # power_params
 POWER_PARAMS_MAT = "params_mat.xlsx"
-POWER_PARAMS_PATH = USER_NAME + "/" + POWER_PARAMS_MAT
 POWER_PARAMS_THETA_IDX = 0
 POWER_PARAMS_MU_IDX = 1
 POWER_PARAMS_SIGMA_IDX = 2

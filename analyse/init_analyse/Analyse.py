@@ -1,10 +1,11 @@
 import time
 
-from analyse.init_analyse.ParseActiveData import iter_files
-from analyse.util.FilePathDefinition import ACTIVE_ROOT_PATH
+from analyse.init_analyse.ParseActiveData import mutil_process_iter_files
+from analyse.util.FilePathDefinition import TEST_INPUT_FILE
 from util import JLog
 
-startTime = time.time()
-iter_files(ACTIVE_ROOT_PATH)
-cost = time.time() - startTime
-JLog.d("Root", f"program takes {cost} s.")
+if __name__ == '__main__':
+    startTime = time.time()
+    mutil_process_iter_files(TEST_INPUT_FILE)
+    cost = time.time() - startTime
+    JLog.d("Root", f"program takes {cost} s.")

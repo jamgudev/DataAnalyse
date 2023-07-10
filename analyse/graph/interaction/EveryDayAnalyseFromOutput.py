@@ -2,9 +2,9 @@ import os
 
 import pandas as pd
 
-from analyse.util import AnalyseUtils
-from analyse.util.FilePathDefinition import CF_ACTIVITY_DIR, OUTPUT_FILE, INPUT_FILE
+from analyse.util.FilePathDefinition import CF_ACTIVITY_DIR, OUTPUT_FILE
 from util import StringUtil, JLog
+
 __TAG = "EveryDayAnalyseFromOutput"
 
 
@@ -17,8 +17,8 @@ __TAG = "EveryDayAnalyseFromOutput"
 #     for d in dayData:
 #         dataStr += str(d) + ", "
 #     print(f"{key}: {dataStr}, size = {len(dayData)}")
-def iter_idx_data_from_file_in_every_day(user_name: str, data_file_name: str, data_idx: int) -> {}:
-    fileDict = iter_file_in_every_day(user_name, data_file_name)
+def iter_idx_data_from_file_in_every_day(filePath: str, user_name: str, data_file_name: str, data_idx: int) -> {}:
+    fileDict = iter_file_in_every_day(filePath, user_name, data_file_name)
     dataOfEveryDay = {}
     for day_key in fileDict.keys():
         files = fileDict[day_key]
@@ -52,9 +52,9 @@ def iter_idx_data_from_file_in_every_day(user_name: str, data_file_name: str, da
 
 
 # iter_file_in_every_day("13266826670", "session_summary.xlsx")
-def iter_file_in_every_day(user_name: str, data_file_name: str) -> {}:
+def iter_file_in_every_day(filePath: str, user_name: str, data_file_name: str) -> {}:
     fileDict = {}
-    rootDir = OUTPUT_FILE + "/" + user_name + "/" + CF_ACTIVITY_DIR
+    rootDir = filePath + "/" + user_name + "/" + CF_ACTIVITY_DIR
     __inner_iter_file_in_every_day(rootDir, data_file_name, fileDict)
     return fileDict
 

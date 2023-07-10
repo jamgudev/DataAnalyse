@@ -705,7 +705,8 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
         sessionDuration = appUsageData.iloc[appUsageDataRows - 1, __session_total_duration_idx]
         __analyse_session_usage(summaryUsages, startTime, sessionDuration, outputRootDir)
     except Exception as e:
-        JLog.e(__TAG, f"analyse err happens: e = {e}")
+        JLog.e(__TAG, f"analyse err happens: e = {e}, appUsageFilePath: {appUsageFilePath}, "
+                      f"powerDataFilePath: {powerDataFilePath}, unitsPowerDataPath: {unitsPowerDataPath}")
 
     # 还是同一个app
     # if lastAppName == appName:
