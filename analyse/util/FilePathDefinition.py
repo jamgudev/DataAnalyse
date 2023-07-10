@@ -6,6 +6,7 @@ INPUT = "input"
 OUTPUT = "output"
 INPUT_FILE = rootDir + "/" + INPUT
 TEST_INPUT_FILE = rootDir + "/test/" + INPUT
+TEST_OUTPUT_FILE = rootDir + "/test/" + OUTPUT
 OUTPUT_FILE = rootDir + "/" + OUTPUT
 
 CF_ROOT = "HWStatistics"
