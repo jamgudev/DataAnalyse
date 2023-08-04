@@ -1,7 +1,7 @@
 import time
 
 from analyse.init_analyse.ParseActiveData import mutil_process_iter_files
-from analyse.util.FilePathDefinition import TEST_INPUT_FILE
+from analyse.util.FilePathDefinition import TEST_INPUT_FILE, INPUT_FILE
 from util import JLog
 
 if __name__ == '__main__':

@@ -12,7 +12,7 @@ from analyse.util.FilePathDefinition import CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS, \
     CF_ACTIVITY_DIR, POWER_PARAMS_MAT, INPUT, OUTPUT
 from util import JLog, ExcelUtil, StringUtil
-from util.StringUtil import get_mobile_number, get_mobile_number_start_pos
+from util.StringUtil import get_user_name, get_mobile_number_start_pos
 
 warnings.filterwarnings('ignore')
 
@@ -93,7 +93,7 @@ def __iter_files(rootDir, multi_process: bool = False):
 def iter_data(rootPath: str, files: [], mutil_process: bool = False):
     # 非多进程用进度条追踪进度
     if not mutil_process:
-        with alive_bar(100, manual=True, ctrl_c=True, title=f'{StringUtil.get_mobile_number(rootPath)} '
+        with alive_bar(100, manual=True, ctrl_c=True, title=f'{StringUtil.get_user_name(rootPath)} '
                                                             f'{StringUtil.get_short_file_name_for_print(rootPath)}') as bar:
             # 对文件名做一个排序，防止power数据错乱
             files.sort()
@@ -171,7 +171,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
         outputRootPath = intputRootPath.replace(INPUT, OUTPUT)
         outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
         if os.path.exists(outputFilePath):
-            JLog.i(__TAG, f"merge_all_power_data, userName[{StringUtil.get_mobile_number(intputRootPath)}], "
+            JLog.i(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
                           f"power file {StringUtil.get_short_file_name_for_print(outputFilePath)} already exist, skipped.")
             return outputFilePath
 
@@ -192,14 +192,14 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
                     singleLine = data.iloc[lineNum]
                     powerData.append(singleLine)
             else:
-                JLog.d(__TAG, f"merge_all_power_data, userName[{StringUtil.get_mobile_number(intputRootPath)}], "
+                JLog.d(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
                               f"file[{fileName}] dir[{intputRootPath}] unreadable, skipped.")
 
         if powerData:
             ExcelUtil.write_to_excel(powerData, outputRootPath, CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX)
             return outputFilePath
     except Exception as e:
-        JLog.e(__TAG, f"merge_all_power_data, userName[{StringUtil.get_mobile_number(intputRootPath)}], "
+        JLog.e(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
                       f"merge_all_power_data err happens: e = {e}")
     return ""
 
@@ -207,7 +207,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
 # 输出功耗文件，并返回路径
 def export_units_power(dirName: str, powerDataPath: str, outputDir: str) -> str:
     if isinstance(powerDataPath, str) and powerDataPath == "" or (not os.path.exists(powerDataPath)):
-        JLog.e(__TAG, f"export_units_power failed: userName[{get_mobile_number(dirName)}], "
+        JLog.e(__TAG, f"export_units_power failed: userName[{get_user_name(dirName)}], "
                       f"file from powerDataPath[{powerDataPath}] not exists, skipped.")
         return ""
 
@@ -216,11 +216,11 @@ def export_units_power(dirName: str, powerDataPath: str, outputDir: str) -> str:
         outputFileName = EXPORT_UNITS_POWER + EXCEL_SUFFIX
         unitAbsFileName = os.path.join(outputDir, outputFileName)
         if os.path.exists(unitAbsFileName):
-            JLog.i(__TAG, f"export_units_power: userName[{get_mobile_number(dirName)}], power file {outputFileName} already exist, skipped.")
+            JLog.i(__TAG, f"export_units_power: userName[{get_user_name(dirName)}], power file {outputFileName} already exist, skipped.")
             return unitAbsFileName
 
         powerData = ExcelUtil.read_excel(powerDataPath, 1)
-        userName = get_mobile_number(outputDir)
+        userName = get_user_name(outputDir)
         dirName = dirName[0: get_mobile_number_start_pos(dirName) - 1]
         powerParamFilePath = dirName + "/" + userName + "/" + POWER_PARAMS_MAT
         paramsData = ExcelUtil.read_excel(powerParamFilePath, 2)

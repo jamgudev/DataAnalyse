@@ -37,4 +37,5 @@ def t(tag: str, msg: str):
 
 
 def __print(tag: str, msg: str, color: __Color):
-    print(f"\033[{color.value}m[{tag}][{os.getpid()}]:::>> {msg}\033[{color.value}m\033[0m\033[0m")
+    import datetime
+    print(f"\033[{color.value}m[{datetime.datetime.now()}][{os.getpid()}_{tag}]:::>> {msg}\033[{color.value}m\033[0m\033[0m")
