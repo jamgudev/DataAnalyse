@@ -11,19 +11,24 @@ __TAG = "EveryDayAnalyseFromOutput"
 # 从用户名根目录开始遍历，按每天的数据文件进行遍历，并根据参数遍历该文件数据中某一列的数据，并整理成dict返回
 # 比如: ./13266826670/HWStatistics/active/20230509
 # dayDatas = iter_idx_data_from_file_in_every_day(TEST_OUTPUT_FILE, "13266826670", "session_summary.xlsx", [2, 3])
-# for key in dayDatas.keys():
+# for key temp dayDatas.keys():
 #     dayData = dayDatas[key]
-#     for idx, data in enumerate(dayData):
+#     for idx, data temp enumerate(dayData):
 #         dataStr = f"{key}, id[{idx}] "
-#         for d in data:
+#         for d temp data:
 #             dataStr += str(d) + ", "
 #         print(dataStr)
+
+# {"20230701": [[data_idx_1...], [data_idx_2...]], "20230702": [[data_idx_1...], [data_idx_2...]], }
 def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file_name: str, data_idxs: []) -> {}:
     fileDict = iter_file_in_every_day(dirName, user_name, data_file_name)
     dataOfEveryDay = {}
+    # 取每天的文件
     for day_key in fileDict.keys():
         files = fileDict[day_key]
+        # 存储 {"data_idx_1": [], "data_idx_2": [], ..}
         idxDataDict = {}
+        # 遍历某天的所有文件
         for file in files:
             if os.path.exists(file):
                 dataFrame = pd.read_excel(file, header=None)
@@ -31,6 +36,7 @@ def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file
                 cols = dataFrame.shape[1]
                 if data_idxs:
                     for row in range(rows):
+                        # 遍历row行，data_idx列需要的索引数据
                         for data_idx in data_idxs:
                             if cols <= data_idx:
                                 JLog.t(__TAG, f"iter_idx_data_from_file_in_every_day: "
@@ -39,6 +45,7 @@ def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file
                             # 跳过表头
                             if row == 0:
                                 continue
+                            # targetData为row行，data_idx列具体的数据
                             targetData = str(dataFrame.iloc[row, data_idx])
                             if data_idx in idxDataDict:
                                 idxDataDict[data_idx].append(targetData)
@@ -57,6 +64,9 @@ def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file
                 dayValues[idx].extend(value)
         else:
             dayValues = []
+            # 按照data_idxs的索引顺序，将需要的数据按顺序存到新的[]
+            # 不如参数data_idxs传进来是[3, 2]，存到dayValues后的顺序为：先存索引3的数据，然后存索引2的数据
+            # dayValues是一个二维list，[[3_1, 3_2..], [2_1, 2_2..]]
             for idx, dayValue in enumerate(idxDataDict.values()):
                 dayValues.append(dayValue)
             dataOfEveryDay[day_key] = dayValues
@@ -85,11 +95,12 @@ def __inner_iter_file_in_every_day(rooDir: str, data_file_name: str, fileDict: {
                 if file == data_file_name:
                     paths.append(os.path.join(root, file))
 
-            if dateOfDay in fileDict:
-                filesOfDay = fileDict[dateOfDay]
-                filesOfDay.extend(paths)
-            else:
-                fileDict[dateOfDay] = paths
+            if paths:
+                if dateOfDay in fileDict:
+                    filesOfDay = fileDict[dateOfDay]
+                    filesOfDay.extend(paths)
+                else:
+                    fileDict[dateOfDay] = paths
 
 
 # 解析这种格式的字符串：/Users/JAMGU_1/PycharmProjects/pythonProject/analyse/output/13266826670/HWStatistics/active/20230626

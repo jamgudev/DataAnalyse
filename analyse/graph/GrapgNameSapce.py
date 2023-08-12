@@ -1,0 +1,6 @@
+
+GRAPH_mean_interaction_length_with_upper_end_of_std_of_every_user = "mean_interaction_length_with_upper_end_of_std_of_every_user.xlsx"
+GRAPH_mean_session_length_vs_session_count_per_day_of_every_user = "mean_session_length_vs_session_count_per_day_of_every_user.xlsx"
+
+SS_SESSION_LENGTH_IDX = 3
+SS_SESSION_START_TIME_IDX = 2

@@ -711,7 +711,7 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
     # 还是同一个app
     # if lastAppName == appName:
     #     # 这个页面出现过
-    #     if appPage in appClassMap:
+    #     if appPage temp appClassMap:
     #         classUseCount = appClassMap[appName]
     #         appClassMap[appPage] = classUseCount + 1
     #         appDetailUsages[appPage]

@@ -1,4 +1,4 @@
-# fileName contains the element in filterList, being taken.
+# fileName contains the element temp filterList, being taken.
 import os
 
 import numpy as np
@@ -69,6 +69,10 @@ def get_standard_deviation_of_list(data: []):
         return float(np.std(f_value))
     else:
         return 0.0
+
+
+def get_upper_end_of_std(data: []) -> float:
+    return get_mean_of_list(data) + get_standard_deviation_of_list(data)
 
 
 def get_mean_of_dict(dic: {}) -> []:

@@ -35,7 +35,7 @@ def compare_time(time_a: str, time_b: str) -> int:
 # result = compare_time('20230405(17_34_2)', '20230405(17_34_3_713)')
 # print('the compare result is:', result)
 
-# 满足 '%Y%m%d(%H_%M_%S_%f)' 格式, in second
+# 满足 '%Y%m%d(%H_%M_%S_%f)' 格式, temp second
 def time_duration_with_mills(end_time: str, start_time: str) -> int:
     timeMillsPattern = '%Y%m%d(%H_%M_%S_%f)'
     tryStartTime = end_time
