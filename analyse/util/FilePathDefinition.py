@@ -5,8 +5,8 @@ rootDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT = "input"
 OUTPUT = "output"
 INPUT_FILE = rootDir + "/" + INPUT
-TEST_INPUT_FILE = rootDir + "/test/" + INPUT
-TEST_OUTPUT_FILE = rootDir + "/test/" + OUTPUT
+TEST_INPUT_FILE = rootDir + "/draw/" + INPUT
+TEST_OUTPUT_FILE = rootDir + "/draw/" + OUTPUT
 OUTPUT_FILE = rootDir + "/" + OUTPUT
 
 CF_ROOT = "HWStatistics"
