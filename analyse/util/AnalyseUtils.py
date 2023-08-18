@@ -75,6 +75,10 @@ def get_upper_end_of_std(data: []) -> float:
     return get_mean_of_list(data) + get_standard_deviation_of_list(data)
 
 
+def get_lower_end_of_std(data: []) -> float:
+    return get_mean_of_list(data) - get_standard_deviation_of_list(data)
+
+
 def get_mean_of_dict(dic: {}) -> []:
     if dic:
         res = []

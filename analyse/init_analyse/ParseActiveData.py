@@ -219,6 +219,7 @@ def export_units_power(dirName: str, powerDataPath: str, outputDir: str) -> str:
             JLog.i(__TAG, f"export_units_power: userName[{get_user_name(dirName)}], power file {outputFileName} already exist, skipped.")
             return unitAbsFileName
 
+        # TODO 要确认是否携带了header
         powerData = ExcelUtil.read_excel(powerDataPath, 1)
         userName = get_user_name(outputDir)
         dirName = dirName[0: get_mobile_number_start_pos(dirName) - 1]
