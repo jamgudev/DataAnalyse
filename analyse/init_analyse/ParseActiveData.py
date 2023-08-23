@@ -10,7 +10,7 @@ from analyse.init_analyse import AppUsageAnalyse
 from analyse.util.AnalyseUtils import filter_file_fun
 from analyse.util.FilePathDefinition import CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS, \
-    CF_ACTIVITY_DIR, POWER_PARAMS_MAT, INPUT, OUTPUT
+    CF_ACTIVITY_DIR, POWER_PARAMS_MAT, INPUT, OUTPUT, POWER
 from util import JLog, ExcelUtil, StringUtil
 from util.StringUtil import get_user_name, get_mobile_number_start_pos
 
@@ -106,7 +106,7 @@ def iter_data(rootPath: str, files: [], mutil_process: bool = False):
             powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
             bar(0.35)
             # 计算各部件分别的功耗
-            unitsPowerDataPath = export_units_power(rootPath, powerDataOutputPath, outputRootPath)
+            unitsPowerDataPath = export_units_power(rootPath, powerDataOutputPath)
             bar(0.45)
             # 过滤出 session_app_usage_ 文件
             appUsageFiles = list(filter(filter_app_usage_fun, files))
@@ -129,7 +129,7 @@ def iter_data(rootPath: str, files: [], mutil_process: bool = False):
         outputRootPath = rootPath.replace(INPUT, OUTPUT)
         powerDataOutputPath = merge_all_power_data(rootPath, powerUsageFiles)
         # 计算各部件分别的功耗
-        unitsPowerDataPath = export_units_power(rootPath, powerDataOutputPath, outputRootPath)
+        unitsPowerDataPath = export_units_power(rootPath, powerDataOutputPath)
         # 过滤出 session_app_usage_ 文件
         appUsageFiles = list(filter(filter_app_usage_fun, files))
         fileNum = len(appUsageFiles)
@@ -168,7 +168,7 @@ def analyse_app_usage_file(input_root_path: str, app_usage_file_name: str, power
 # 合并所有power_data文件
 def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
     try:
-        outputRootPath = intputRootPath.replace(INPUT, OUTPUT)
+        outputRootPath = intputRootPath.replace(INPUT, POWER)
         outputFilePath = outputRootPath + "/" + CF_OUTPUT_POWER_USAGE + EXCEL_SUFFIX
         if os.path.exists(outputFilePath):
             JLog.i(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
@@ -205,7 +205,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
 
 
 # 输出功耗文件，并返回路径
-def export_units_power(dirName: str, powerDataPath: str, outputDir: str) -> str:
+def export_units_power(dirName: str, powerDataPath: str) -> str:
     if isinstance(powerDataPath, str) and powerDataPath == "" or (not os.path.exists(powerDataPath)):
         JLog.e(__TAG, f"export_units_power failed: userName[{get_user_name(dirName)}], "
                       f"file from powerDataPath[{powerDataPath}] not exists, skipped.")
@@ -213,6 +213,7 @@ def export_units_power(dirName: str, powerDataPath: str, outputDir: str) -> str:
 
     powerParamFilePath = ""
     try:
+        outputDir = dirName.replace(INPUT, POWER)
         outputFileName = EXPORT_UNITS_POWER + EXCEL_SUFFIX
         unitAbsFileName = os.path.join(outputDir, outputFileName)
         if os.path.exists(unitAbsFileName):

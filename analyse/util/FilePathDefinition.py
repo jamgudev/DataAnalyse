@@ -4,6 +4,7 @@ import os.path
 rootDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT = "input"
 OUTPUT = "output"
+POWER = "power_data"
 INPUT_FILE = rootDir + "/" + INPUT
 TEST_INPUT_FILE = rootDir + "/test/" + INPUT
 TEST_OUTPUT_FILE = rootDir + "/test/" + OUTPUT
