@@ -43,7 +43,7 @@ def get_mean_session_length_vs_session_count_per_day_of_every_user():
                         sessionCountVsMeanSessionLengthOfUser.append(result)
                 bar()
     if sessionCountVsMeanSessionLengthOfUser:
-        ExcelUtil.write_to_excel(sessionCountVsMeanSessionLengthOfUser, TEST_OUTPUT_FILE,
+        ExcelUtil.write_to_excel(sessionCountVsMeanSessionLengthOfUser, dirName,
                                  GRAPH_mean_session_length_vs_session_count_per_day_of_every_user)
 
 

@@ -23,6 +23,7 @@ __app_page_end_time_idx = 3
 __app_page_duration_time_idx = 5
 __power_time_idx = 0
 __power_network_speed_idx = 12
+__session_for_search_row = "Session"
 __session_total_duration_idx = 4
 
 __filter_screen_on = "Screen On"
@@ -701,8 +702,12 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
 
         # 解析Session使用概括
         startTime = appUsageData.iloc[0, __screen_on_time_idx]
-        appUsageDataRows = appUsageData.shape[0]
-        sessionDuration = appUsageData.iloc[appUsageDataRows - 1, __session_total_duration_idx]
+        # 寻找第一列Session所在的行号
+        sessionRowIdx = list(appUsageData.index[appUsageData.iloc[:, 0] == __session_for_search_row])
+        if len(sessionRowIdx) == 0:
+            JLog.t(__TAG, f"analyse: can not find Session's row index. found: {sessionRowIdx}")
+            return
+        sessionDuration = appUsageData.iloc[sessionRowIdx[0], __session_total_duration_idx]
         __analyse_session_usage(summaryUsages, startTime, sessionDuration, outputRootDir)
     except Exception as e:
         JLog.e(__TAG, f"analyse err happens: e = {e}, appUsageFilePath: {appUsageFilePath}, "

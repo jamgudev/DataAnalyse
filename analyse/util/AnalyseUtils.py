@@ -116,6 +116,7 @@ def get_all_user_name_from_dir(dirName: str) -> []:
             # 过滤目录文件
             if os.path.isdir(os.path.join(dirName, file)):
                 allUserName.append(file)
+        allUserName.sort()
         return allUserName
     else:
         return []

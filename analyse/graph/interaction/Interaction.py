@@ -5,13 +5,13 @@ from analyse.graph.GrapgNameSapce import GRAPH_mean_active_time_per_day_with_std
 from analyse.graph.interaction.EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list, \
     get_upper_end_of_std, get_lower_end_of_std
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_SESSION_SUMMARY, TEST_OUTPUT_FILE
-from util import ExcelUtil
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_SESSION_SUMMARY, TEST_OUTPUT_FILE, OUTPUT_FILE
+from util import ExcelUtil, JLog
 
 
 # Fig 3(a)
 def mean_active_time_per_day_with_std_of_every_user():
-    dirName = TEST_OUTPUT_FILE
+    dirName = OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -24,7 +24,13 @@ def mean_active_time_per_day_with_std_of_every_user():
                     # 每天的active_time：当天所以session length总和
                     activeTimePerDay = []
                     for idx, data in enumerate(dataOfEveryDay.values()):
-                        activeTimePerDay.append(eval("+".join(data[0])))
+                        try:
+                            data_str = "+".join(data[0])
+                            data_sum = eval(data_str)
+                            activeTimePerDay.append(int(data_sum))
+                        except Exception as e:
+                            JLog.e("mean_active_time_per_day_with_std_of_every_user",
+                                   f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                     # 取平均
                     result = []
                     # [...]
@@ -36,7 +42,7 @@ def mean_active_time_per_day_with_std_of_every_user():
                     result.append(lowerEnd0fStd)
                     allUserData.append(result)
                 bar()
-            ExcelUtil.write_to_excel(allUserData, TEST_OUTPUT_FILE,
+            ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_mean_active_time_per_day_with_std_of_every_user)
 
 
