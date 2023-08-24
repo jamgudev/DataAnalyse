@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,5 +20,10 @@ plt.scatter(x, y, c=colors)
 plt.xlabel('Mean Session Length (in minutes)')
 plt.ylabel('Session Count')
 plt.title('Scatter Plot')
+
+# 保存图像
+current_dir = os.path.dirname(os.path.abspath(__file__))
+save_path = os.path.join(current_dir, 'GRAPH_mean_session_length_vs_session_count_per_day_of_every_user.png')
+plt.savefig(save_path)
 
 plt.show()

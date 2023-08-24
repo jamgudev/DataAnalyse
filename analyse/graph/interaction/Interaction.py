@@ -2,7 +2,7 @@ from alive_progress import alive_bar
 
 from analyse.graph.GrapgNameSapce import GRAPH_mean_active_time_per_day_with_std_of_every_user, \
     GRAPH_mean_session_count_per_day_with_std_of_every_user, GRAPH_mean_session_length_with_std_of_every_user
-from analyse.graph.interaction.EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
+from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list, \
     get_upper_end_of_std, get_lower_end_of_std
 from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_SESSION_SUMMARY, TEST_OUTPUT_FILE, OUTPUT_FILE
