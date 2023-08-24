@@ -16,7 +16,8 @@ def iter_data_pre_process_check_sessions_in_every():
         rootDir = dirName + "/" + user_name + "/" + CF_ACTIVITY_DIR
         dateDirs = []
         for dateDir in os.scandir(rootDir):
-            dateDirs.append(dateDir.name)
+            if dateDir.is_dir():
+                dateDirs.append(dateDir.name)
         if dateDirs:
             dateDirs.sort()
             for dateDir in dateDirs:
