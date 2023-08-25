@@ -31,10 +31,10 @@ plt.xlabel('User ID')
 plt.ylabel('Phone Active Time(mins)')
 plt.title('All User')
 # 设置y轴为对数刻度
-# plt.yscale('log')
-# # 设置y轴刻度范围为10到1000
-# plt.ylim(10, 1000)
-# plt.legend()
+plt.yscale('log')
+# 设置y轴刻度范围为10到1000
+plt.ylim(1, 1000)
+plt.legend()
 # 保存图像
 current_dir = os.path.dirname(os.path.abspath(__file__))
 save_path = os.path.join(current_dir, 'GRAPH_mean_active_time_per_day_with_std_of_every_user.png')
