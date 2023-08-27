@@ -1,10 +1,10 @@
 from alive_progress import alive_bar
 
-from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_APP_OPEN_NUM_IDX, GRAPH_mean_active_time_per_day_with_std_of_every_user_pure, \
+from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_APP_OPEN_NUM_IDX, \
     GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day
 from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
-from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_upper_end_of_std, get_mean_of_list, get_lower_end_of_std
-from analyse.util.FilePathDefinition import OUTPUT_FILE, EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
+from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list
+from analyse.util.FilePathDefinition import EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 
@@ -24,8 +24,9 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
                     # 每天的active_time：当天所以session length总和
                     totalActiveTimePerDay = []
                     userActiveTimePerDay = []
-                    totalActiveTimes = 0
-                    userActiveTimes = 0
+                    # 下面是次数
+                    totalActiveTimesPerDay = []
+                    userActiveTimesPerDay = []
                     for idx, data in enumerate(dataOfEveryDay.values()):
                         try:
                             activeInteractions = []
@@ -36,8 +37,8 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
                             data_str = "+".join(data[1])
                             data_sum = eval(data_str)
                             totalActiveTimePerDay.append(int(data_sum))
-                            totalActiveTimes += len(data[1])
-                            userActiveTimes += len(userActiveTimePerDay)
+                            totalActiveTimesPerDay.append(len(data[1]))
+                            userActiveTimesPerDay.append(len(activeInteractions))
                         except Exception as e:
                             JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
@@ -48,12 +49,12 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
                     userActiveMean = get_mean_of_list(userActiveTimePerDay)
                     result.append(totalActiveMean)
                     result.append(userActiveMean)
-                    result.append(totalActiveTimes)
-                    result.append(userActiveTimes)
+                    result.append(get_mean_of_list(totalActiveTimesPerDay))
+                    result.append(get_mean_of_list(userActiveTimesPerDay))
                     allUserData.append(result)
                 bar()
             allUserData.insert(0, ["用户每天Active总平均时长", "用户每天主动触发的Active平均时长",
-                                   "用户手机总Active次数", "用户手机中用户触发的Active次数"])
+                                   "用户每天手机总Active次数", "用户每天手机中用户触发的Active次数"])
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day)
 

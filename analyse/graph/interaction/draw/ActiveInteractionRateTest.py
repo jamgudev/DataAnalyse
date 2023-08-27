@@ -39,7 +39,7 @@ userActiveTimes = data.iloc[:, 3]
 
 ax2 = fig.add_subplot(gs[1])
 ax2.plot(user_id, totalActiveTimes, 'v', label='Upper Limit')
-ax2.plot(user_id, userActiveTimes, 'o-', label='Average Time')
+ax2.plot(user_id, userActiveTimes, 'o', label='Average Time')
 # 绘制虚线段连接Upper_limit和lower_limit
 for i in range(len(user_id)):
     ax2.plot([user_id[i], user_id[i]], [totalActiveTimes[i], userActiveTimes[i]], 'k--')

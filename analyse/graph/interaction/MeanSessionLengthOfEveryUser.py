@@ -1,7 +1,7 @@
 from alive_progress import alive_bar
 
 from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_SESSION_START_TIME_IDX, \
-    GRAPH_mean_session_length_vs_session_count_per_day_of_every_user
+    GRAPH_mean_session_length_vs_session_count_per_day_of_every_user, SS_APP_OPEN_NUM_IDX
 from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_dict, get_mean_of_list
 from analyse.util.FilePathDefinition import OUTPUT_FILE, EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
@@ -20,27 +20,27 @@ def get_mean_session_length_vs_session_count_per_day_of_every_user():
             for userName in allUserName:
                 dataOfEveryDay = iter_idx_data_from_file_in_every_day(dirName, userName,
                                                                       EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX,
-                                                                      [SS_SESSION_LENGTH_IDX])
+                                                                      [SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX])
                 dayNum = len(dataOfEveryDay.keys())
                 if isinstance(dataOfEveryDay, dict):
                     # 所有天数里，[3, 2]索引的数据，是一个dict
-                    allDayData = []
                     # 将不同天里的所有数据整合在一起
+                    allSessionsPerDay = []
                     for idx, data in enumerate(dataOfEveryDay.values()):
-                        if len(allDayData) == 0:
-                            allDayData = data[0]
-                        else:
-                            allDayData.extend(data[0])
+                        interactSessionsInSingleDay = []
+                        for session_idx, session_app_num in enumerate(data[0]):
+                            # 过滤弹消息的情况
+                            if float(session_app_num) != 0:
+                                interactSessionsInSingleDay.append(float(data[1][session_idx]))
+                        allSessionsPerDay.extend(interactSessionsInSingleDay)
                     # 取平均
                     result = []
                     # [...]
-                    meanSessionLength = get_mean_of_list(allDayData)
-                    sessionCountPerDay = round(len(allDayData) / dayNum + 0.5)
+                    meanSessionLength = get_mean_of_list(allSessionsPerDay)
+                    sessionCountPerDay = round(len(allSessionsPerDay) / dayNum + 0.5)
                     result.append(meanSessionLength)
                     result.append(sessionCountPerDay)
-
-                    if result:
-                        sessionCountVsMeanSessionLengthOfUser.append(result)
+                    sessionCountVsMeanSessionLengthOfUser.append(result)
                 bar()
     if sessionCountVsMeanSessionLengthOfUser:
         ExcelUtil.write_to_excel(sessionCountVsMeanSessionLengthOfUser, dirName,

@@ -31,7 +31,11 @@ def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file
         # 遍历某天的所有文件
         for file in files:
             if os.path.exists(file):
-                dataFrame = pd.read_excel(file, header=None)
+                try:
+                    dataFrame = pd.read_excel(file, header=None)
+                except ValueError as e:
+                    JLog.t(__TAG, f"iter_idx_data_from_file_in_every_day read_excel error: file[{file}], e[{e}]")
+                    return dataOfEveryDay
                 rows = dataFrame.shape[0]
                 cols = dataFrame.shape[1]
                 if data_idxs:
@@ -101,6 +105,10 @@ def __inner_iter_file_in_every_day(rooDir: str, data_file_name: str, fileDict: {
                     filesOfDay.extend(paths)
                 else:
                     fileDict[dateOfDay] = paths
+    # 对paths升序排序
+    for day in fileDict.keys():
+        dayPaths = fileDict[day]
+        dayPaths.sort()
 
 
 # 解析这种格式的字符串：/Users/JAMGU_1/PycharmProjects/pythonProject/analyse/output/13266826670/HWStatistics/active/20230626

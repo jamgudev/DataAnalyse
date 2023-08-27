@@ -15,7 +15,7 @@ from util import ExcelUtil, JLog
 
 # Fig 3(a)
 def mean_active_time_per_day_with_std_of_every_user_pure():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -55,7 +55,7 @@ def mean_active_time_per_day_with_std_of_every_user_pure():
 
 # Fig 4(a)
 def mean_session_count_per_day_with_std_of_every_user_pure():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -90,7 +90,7 @@ def mean_session_count_per_day_with_std_of_every_user_pure():
 
 # Fig 4(b)
 def mean_session_length_with_std_of_every_user_pure():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -125,5 +125,5 @@ def mean_session_length_with_std_of_every_user_pure():
 
 
 mean_active_time_per_day_with_std_of_every_user_pure()
-mean_session_count_per_day_with_std_of_every_user_pure()
-mean_session_length_with_std_of_every_user_pure()
+# mean_session_count_per_day_with_std_of_every_user_pure()
+# mean_session_length_with_std_of_every_user_pure()
