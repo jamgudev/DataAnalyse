@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.gridspec import GridSpec
 
@@ -26,23 +25,36 @@ ratios = [a / b for a, b in zip(userActiveTimePerDay, totalActiveTimePerDay)]
 user_id = [i for i in range(1, len(totalActiveTimePerDay) + 1)]
 
 ax1 = fig.add_subplot(gs[0])
-ax1.bar(user_id, ratios)
+# ax1.bar(user_id, ratios)
+# 绘制第一个条形图
+width = 0.5
+# ax1.bar(np.arange(len(user_id)), totalActiveTimePerDay, width, label='Bar 1')
+# ax1.bar(np.arange(len(user_id)) + width, userActiveTimePerDay, width, label='Bar 2')
+# 绘制第一个条形图，颜色较深
+ax1.bar(user_id, totalActiveTimePerDay, width, alpha=1, color='red', label='Bar 1')
+
+# 绘制第二个条形图，颜色较浅
+ax1.bar(user_id, userActiveTimePerDay, width, color='blue', label='Bar 2')
 
 ax1.set_xlabel('User ID')
-ax1.set_ylabel('User Active Time / Total Active Time')
+ax1.set_ylabel('User Active Time / Total Active Time(mins)')
 ax1.set_title('All User')
 # plt.yscale('log')
-ax1.set_ylim(0.8, 1)
 
 totalActiveTimes = data.iloc[:, 2]
 userActiveTimes = data.iloc[:, 3]
 
 ax2 = fig.add_subplot(gs[1])
-ax2.plot(user_id, totalActiveTimes, 'v', label='Upper Limit')
-ax2.plot(user_id, userActiveTimes, 'o', label='Average Time')
-# 绘制虚线段连接Upper_limit和lower_limit
-for i in range(len(user_id)):
-    ax2.plot([user_id[i], user_id[i]], [totalActiveTimes[i], userActiveTimes[i]], 'k--')
+# ax2.plot(user_id, totalActiveTimes, 'v', label='Upper Limit')
+# ax2.plot(user_id, userActiveTimes, 'o', label='Average Time')
+# # 绘制虚线段连接Upper_limit和lower_limit
+# for i in range(len(user_id)):
+#     ax2.plot([user_id[i], user_id[i]], [totalActiveTimes[i], userActiveTimes[i]], 'k--')
+# 绘制第一个条形图，颜色较深
+ax2.bar(user_id, totalActiveTimes, width, alpha=1, color='red', label='Bar 1')
+
+# 绘制第二个条形图，颜色较浅
+ax2.bar(user_id, userActiveTimes, width, color='blue', label='Bar 2')
 ax2.set_xlabel('User ID')
 ax2.set_ylabel('User Active Times / Total Active Times')
 ax2.set_title('All User')

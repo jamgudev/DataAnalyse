@@ -1,3 +1,4 @@
+import os
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -35,5 +36,9 @@ plt.xticks(x)
 plt.xlabel('Hour In Day')
 plt.ylabel('Interaction Times(mins)')
 plt.title('Average with 95% Confidence Interval')
+# 保存图像
+current_dir = os.path.dirname(os.path.abspath(__file__))
+save_path = os.path.join(current_dir, 'GRAPH_mean_interactive_time_in_hour_for_all_users.png')
+plt.savefig(save_path)
 
 plt.show()

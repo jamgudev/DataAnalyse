@@ -4,7 +4,7 @@ from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_APP_OPEN_NUM_
     GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day
 from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list
-from analyse.util.FilePathDefinition import EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
+from analyse.util.FilePathDefinition import EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE, OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 

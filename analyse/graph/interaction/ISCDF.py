@@ -8,7 +8,7 @@ from util import JLog, ExcelUtil
 
 
 def all_interactions_cdf():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allInteractionData = []

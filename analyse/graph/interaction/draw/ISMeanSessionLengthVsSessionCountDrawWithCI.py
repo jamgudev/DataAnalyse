@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -13,7 +15,7 @@ data = ExcelUtil.read_excel(dirName)
 
 
 # 将每天使用次数分为5组
-data['group'] = pd.qcut(data.iloc[:, 0].apply(lambda x: x / (1000 * 60)), q=4)
+data['group'] = pd.qcut(data.iloc[:, 0].apply(lambda x: x / (1000 * 60)), q=5)
 
 # 计算每组平均使用时间的平均数
 grouped_data = data.groupby('group')[1].mean()
@@ -42,4 +44,9 @@ plt.xticks(x_pos, groups)
 plt.xlabel('Session Lengths')
 plt.ylabel('Session Counts')
 plt.title('Average Usage Time with 95% Confidence Interval')
+# 保存图像
+current_dir = os.path.dirname(os.path.abspath(__file__))
+save_path = os.path.join(current_dir, 'GRAPH_mean_session_length_vs_session_count_per_day_of_every_user_with_ci.png')
+plt.savefig(save_path)
+
 plt.show()
