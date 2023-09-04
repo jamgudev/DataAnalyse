@@ -25,24 +25,25 @@ def get_mean_session_length_vs_session_count_per_day_of_every_user():
                 if isinstance(dataOfEveryDay, dict):
                     # 所有天数里，[3, 2]索引的数据，是一个dict
                     # 将不同天里的所有数据整合在一起
-                    allSessionsPerDay = []
+                    allSessions = []
                     for idx, data in enumerate(dataOfEveryDay.values()):
                         interactSessionsInSingleDay = []
                         for session_idx, session_app_num in enumerate(data[0]):
                             # 过滤弹消息的情况
                             if float(session_app_num) != 0:
                                 interactSessionsInSingleDay.append(float(data[1][session_idx]))
-                        allSessionsPerDay.extend(interactSessionsInSingleDay)
+                        allSessions.extend(interactSessionsInSingleDay)
                     # 取平均
                     result = []
                     # [...]
-                    meanSessionLength = get_mean_of_list(allSessionsPerDay)
-                    sessionCountPerDay = round(len(allSessionsPerDay) / dayNum + 0.5)
+                    meanSessionLength = get_mean_of_list(allSessions)
+                    sessionCountPerDay = round(len(allSessions) / dayNum + 0.5)
                     result.append(meanSessionLength)
                     result.append(sessionCountPerDay)
                     sessionCountVsMeanSessionLengthOfUser.append(result)
                 bar()
     if sessionCountVsMeanSessionLengthOfUser:
+        sessionCountVsMeanSessionLengthOfUser.insert(0, ['平均Session长度', '每天平均Session数量'])
         ExcelUtil.write_to_excel(sessionCountVsMeanSessionLengthOfUser, dirName,
                                  GRAPH_mean_session_length_vs_session_count_per_day_of_every_user)
 

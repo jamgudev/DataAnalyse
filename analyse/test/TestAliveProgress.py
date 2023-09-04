@@ -1,28 +1,24 @@
-import threading
+import matplotlib.pyplot as plt
+import numpy as np
 
-from alive_progress import alive_bar
-import time
+success_data = [50, 30, 20]  # 成功的部分数据
+total_data = [100, 150, 100]  # 所有的数据
+categories = ['Category 1', 'Category 2', 'Category 3']  # 数据类别
 
-semaphore = threading.Semaphore(6)
+# 计算失败的部分数据
+failure_data = [total - success for total, success in zip(total_data, success_data)]
 
-def test_fun():
-    with alive_bar(100, ctrl_c=False, title=f'下载{threading.currentThread().name}') as bar:
-        for i in range(100):
-            time.sleep(0.02)
-            print(f"test_fun work: currentThread {threading.currentThread().name}")
-            bar()
+# 设置颜色和边界颜色
+colors = ['lightblue', 'lightgreen', 'lightyellow']
+edgecolors = ['black'] * len(categories)
 
-def test():
-    threads = []
-    with semaphore:
-        for i in range(10):
-            thread = threading.Thread(target=test_fun)
-            threads.append(thread)
-            thread.start()
+# 绘制带有黑色边界的堆叠条形图
+plt.bar(categories, failure_data, color=colors, edgecolor=edgecolors, label='Failures Data')
+plt.bar(categories, success_data, bottom=failure_data, color=colors, edgecolor=edgecolors, label='Success Data')
 
-    print("main_thread 1")
-    for thread in threads:
-        thread.join()
-    print("main_thread 2")
+plt.xlabel('Categories')
+plt.ylabel('Data')
+plt.title('Success Data vs. Total Data')
+plt.legend()
 
-test()
+plt.show()

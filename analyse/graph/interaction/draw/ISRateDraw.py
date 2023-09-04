@@ -17,32 +17,46 @@ data = ExcelUtil.read_excel(dirName, header=0)
 
 # 创建网格布局
 fig = plt.figure(figsize=(10, 10))  # 调整整个图形的大小
-gs = GridSpec(1, 2, width_ratios=[2, 2])  # 指定两个子图的宽度比例
+gs = GridSpec(1, 2, width_ratios=[10, 10])  # 指定两个子图的宽度比例
 
 totalActiveTimePerDay = data.iloc[:, 0].apply(lambda x: x / (1000 * 60))
 userActiveTimePerDay = data.iloc[:, 1].apply(lambda x: x / (1000 * 60))
+activeSum = sum(userActiveTimePerDay)
+totalSum = sum(totalActiveTimePerDay)
+non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum)
 ratios = [a / b for a, b in zip(userActiveTimePerDay, totalActiveTimePerDay)]
 user_id = [i for i in range(1, len(totalActiveTimePerDay) + 1)]
 
 ax1 = fig.add_subplot(gs[0])
 # ax1.bar(user_id, ratios)
-# 绘制第一个条形图
-width = 0.5
+# 柱子宽度
+width = 1
+# 柱间间隔
+spacing = 0.3
+# 计算每个柱子的位置
+# x = np.arange(len(user_id))
+# x = x * (width + spacing)
+x = user_id
+edgecolors = ['black'] * len(x)
 # ax1.bar(np.arange(len(user_id)), totalActiveTimePerDay, width, label='Bar 1')
 # ax1.bar(np.arange(len(user_id)) + width, userActiveTimePerDay, width, label='Bar 2')
 # 绘制第一个条形图，颜色较深
-ax1.bar(user_id, totalActiveTimePerDay, width, alpha=1, color='red', label='Bar 1')
+ax1.bar(x, totalActiveTimePerDay, width, alpha=1, color='white', edgecolor=edgecolors, label='AS length')
 
 # 绘制第二个条形图，颜色较浅
-ax1.bar(user_id, userActiveTimePerDay, width, color='blue', label='Bar 2')
-
-ax1.set_xlabel('User ID')
-ax1.set_ylabel('User Active Time / Total Active Time(mins)')
+ax1.bar(x, userActiveTimePerDay, width, color='lightblue', edgecolor=edgecolors, label='IS length')
+ax1.text(max(x), max(totalActiveTimePerDay) - 20, f"NILR: {non_interactive_rate}", ha='right', va='top')
+ax1.set_xlabel('Users')
+ax1.set_ylabel('Session Length Per Day(in mins)')
 ax1.set_title('All User')
+ax1.legend()
 # plt.yscale('log')
 
 totalActiveTimes = data.iloc[:, 2]
 userActiveTimes = data.iloc[:, 3]
+activeSum = sum(userActiveTimes)
+totalSum = sum(totalActiveTimes)
+non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum)
 
 ax2 = fig.add_subplot(gs[1])
 # ax2.plot(user_id, totalActiveTimes, 'v', label='Upper Limit')
@@ -51,13 +65,15 @@ ax2 = fig.add_subplot(gs[1])
 # for i in range(len(user_id)):
 #     ax2.plot([user_id[i], user_id[i]], [totalActiveTimes[i], userActiveTimes[i]], 'k--')
 # 绘制第一个条形图，颜色较深
-ax2.bar(user_id, totalActiveTimes, width, alpha=1, color='red', label='Bar 1')
+ax2.bar(x, totalActiveTimes, width, alpha=1, color='white', edgecolor=edgecolors, label='AS Count')
 
 # 绘制第二个条形图，颜色较浅
-ax2.bar(user_id, userActiveTimes, width, color='blue', label='Bar 2')
-ax2.set_xlabel('User ID')
-ax2.set_ylabel('User Active Times / Total Active Times')
+ax2.bar(x, userActiveTimes, width, color='lightblue', edgecolor=edgecolors, label='IS Count')
+ax2.text(12, max(totalActiveTimes) - 10, f"NICR: {non_interactive_rate}", ha='right', va='top')
+ax2.set_xlabel('Users')
+ax2.set_ylabel('Session Counts Per Day')
 ax2.set_title('All User')
+ax2.legend()
 
 # 调整子图之间的间距
 plt.subplots_adjust(wspace=0.4)  # 调整水平间距

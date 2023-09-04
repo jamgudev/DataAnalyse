@@ -19,7 +19,6 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
                 dataOfEveryDay = iter_idx_data_from_file_in_every_day(dirName, userName,
                                                                       EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX,
                                                                       [SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX])
-                # 该用户每天的数据的均值和标准差
                 if isinstance(dataOfEveryDay, dict):
                     # 每天的active_time：当天所以session length总和
                     totalActiveTimePerDay = []

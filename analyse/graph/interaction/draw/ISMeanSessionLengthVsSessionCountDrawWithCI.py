@@ -40,10 +40,11 @@ x_pos = np.arange(len(groups))
 means = grouped_data.values
 
 plt.errorbar(x_pos, means, yerr=[(ci[1]-ci[0])/2 for ci in confidence_intervals], fmt='o-', capsize=4)
-plt.xticks(x_pos, groups)
-plt.xlabel('Session Lengths')
-plt.ylabel('Session Counts')
-plt.title('Average Usage Time with 95% Confidence Interval')
+x_labels = ['({:.2f}, {:.2f}]'.format(interval.left, interval.right) for interval in groups]
+plt.xticks(x_pos, x_labels)
+plt.xlabel('Mean Session Length (in mins)')
+plt.ylabel('Session Counts Per Day')
+plt.title('Mean Session Length with 95% Confidence Interval')
 # 保存图像
 current_dir = os.path.dirname(os.path.abspath(__file__))
 save_path = os.path.join(current_dir, 'GRAPH_mean_session_length_vs_session_count_per_day_of_every_user_with_ci.png')

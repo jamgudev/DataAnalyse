@@ -4,12 +4,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy import stats
 
-from analyse.graph.GrapgNameSapce import GRAPH_mean_interactive_time_in_hour_for_all_users
+from analyse.graph.GrapgNameSapce import GRAPH_mean_interactive_length_in_hour_for_all_users
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 # 读取Excel文件数据
-dirName = TEST_OUTPUT_FILE + "/" + GRAPH_mean_interactive_time_in_hour_for_all_users
+dirName = TEST_OUTPUT_FILE + "/" + GRAPH_mean_interactive_length_in_hour_for_all_users
 df = ExcelUtil.read_excel(dirName)
 
 # 存储每一列的数据的列表
@@ -34,7 +34,7 @@ plt.errorbar(x, averages, yerr=[(ci[1]-ci[0])/2 for ci in confidence_intervals],
 
 plt.xticks(x)
 plt.xlabel('Hour In Day')
-plt.ylabel('Interaction Times(mins)')
+plt.ylabel('Session Length (in mins)')
 plt.title('Average with 95% Confidence Interval')
 # 保存图像
 current_dir = os.path.dirname(os.path.abspath(__file__))

@@ -1,5 +1,5 @@
-from datetime import datetime
 import time
+from datetime import datetime
 
 from util import JLog
 
@@ -69,6 +69,19 @@ def get_hour_from_date_str_with_mills(dateStr: str) -> int:
     return datetime_obj
 
 
+def is_week_day(dateStr: str) -> bool:
+    if len(dateStr) == 0:
+        return False
+    # 解析时间字符串
+    try:
+        # weekday返回0-6，0表周一，5，6为周末
+        datetime_obj = datetime.strptime(dateStr, "%Y%m%d(%H_%M_%S_%f)").weekday() < 5
+    except ValueError as e:
+        JLog.e(__TAG, str(e))
+        datetime_obj = False
+    return datetime_obj
+
+
 def get_today_of_date() -> str:
     today = datetime.today()
     return today.strftime("%Y%m%d")
@@ -98,4 +111,5 @@ def compare_is_same_day(time_a: str, time_b: str) -> bool:
     pattern = '%Y%m%d'
 
     return time.mktime(time.strptime(a, pattern)) == time.mktime(time.strptime(b, pattern))
+
 
