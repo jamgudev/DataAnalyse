@@ -1,24 +1,22 @@
-import matplotlib.pyplot as plt
-import numpy as np
+import re
 
-success_data = [50, 30, 20]  # 成功的部分数据
-total_data = [100, 150, 100]  # 所有的数据
-categories = ['Category 1', 'Category 2', 'Category 3']  # 数据类别
+def check_package_name(package_name):
+    pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'  # 正则表达式模式
+    match = re.match(pattern, package_name)  # 进行匹配
+    return bool(match)  # 返回匹配结果
 
-# 计算失败的部分数据
-failure_data = [total - success for total, success in zip(total_data, success_data)]
+# 测试包名
+test_package1 = "com.example.app"      # 符合格式
+test_package2 = "com.example.app_v1"   # 符合格式
+test_package3 = "com.example.app123"   # 符合格式
+test_package4 = "com.example.app."     # 不符合格式
+test_package5 = "tv.app.v1"   # 符合格式
+test_package6 = "com.example.app_"     # 不符合格式
 
-# 设置颜色和边界颜色
-colors = ['lightblue', 'lightgreen', 'lightyellow']
-edgecolors = ['black'] * len(categories)
-
-# 绘制带有黑色边界的堆叠条形图
-plt.bar(categories, failure_data, color=colors, edgecolor=edgecolors, label='Failures Data')
-plt.bar(categories, success_data, bottom=failure_data, color=colors, edgecolor=edgecolors, label='Success Data')
-
-plt.xlabel('Categories')
-plt.ylabel('Data')
-plt.title('Success Data vs. Total Data')
-plt.legend()
-
-plt.show()
+# 检查包名格式
+print(check_package_name(test_package1))  # True
+print(check_package_name(test_package2))  # True
+print(check_package_name(test_package3))  # True
+print(check_package_name(test_package4))  # False
+print(check_package_name(test_package5))  # True
+print(check_package_name(test_package6))  # False

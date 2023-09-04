@@ -1,4 +1,5 @@
 import os.path
+import re
 
 import pandas as pd
 
@@ -29,7 +30,7 @@ __session_total_duration_idx = 4
 __filter_screen_on = "Screen On"
 __filter_screen_off = "Screen Off"
 __filter_user_present = "User Present"
-__filter_app_usage = "com."
+__filter_app_usage_pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
 __filter_session_summery = "Session Summarize"
 
 
@@ -586,7 +587,9 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, un
     outAppDetailUsages = []
     for i in range(appUsageRows):
         lineHeader = appUsageData.iloc[i, 0]
-        if __filter_app_usage in lineHeader:
+        if __filter_session_summery in lineHeader:
+            break
+        elif bool(re.match(__filter_app_usage_pattern, lineHeader)):
             appName = appUsageData.iloc[i, __app_name_idx]
             appPage = appUsageData.iloc[i, __app_page_name_idx]
             startTime = appUsageData.iloc[i, __app_page_start_time_idx]
@@ -597,8 +600,6 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, un
             appDetailUsage.add_unit_pw(get_unit_consumption(unitsPowerData, startTime, endTime))
             appDetailUsages.append(appDetailUsage.to_excel_list())
             outAppDetailUsages.append(appDetailUsage)
-        elif __filter_session_summery in lineHeader:
-            break
         else:
             continue
 
