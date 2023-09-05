@@ -1,9 +1,9 @@
 from alive_progress import alive_bar
 
-from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, GRAPH_mean_active_time_per_day_with_std_of_every_user, SS_SESSION_START_TIME_IDX, \
+from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_SESSION_START_TIME_IDX, \
     GRAPH_as_mean_session_length_in_week_day
-from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
-from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_upper_end_of_std, get_mean_of_list, get_lower_end_of_std
+from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
+from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX
 from util import JLog, ExcelUtil, TimeUtils
 

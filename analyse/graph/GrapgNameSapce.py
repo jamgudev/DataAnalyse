@@ -11,7 +11,16 @@ GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day = "user_me
 GRAPH_mean_interactive_length_in_hour_for_all_users = "mean_interactive_length_in_hour_for_all_users.xlsx"
 GRAPH_mean_IS_count_in_hour_per_day_for_all_users = "mean_IS_count_in_hour_per_day_for_all_users.xlsx"
 GRAPH_all_interactions_cdf = "all_interactions_cdf.xlsx"
+GRAPH_app_usage_in_all_users = "app_usage_in_all_users.xlsx"
 
+
+# session
 SS_APP_OPEN_NUM_IDX = 0
 SS_SESSION_LENGTH_IDX = 3
 SS_SESSION_START_TIME_IDX = 2
+# app detail usage
+AD_APP_NAME = 0
+AD_APP_DURATION = 3
+# app summary usage
+AS_APP_NAME = 0
+AS_APP_DURATION = 9

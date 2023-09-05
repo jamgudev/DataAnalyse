@@ -1,9 +1,9 @@
 from alive_progress import alive_bar
 
 from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_APP_OPEN_NUM_IDX, GRAPH_all_interactions_cdf
-from analyse.graph.interaction.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
+from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, OUTPUT_FILE
+from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX
 from util import JLog, ExcelUtil
 
 
