@@ -1,6 +1,7 @@
 from alive_progress import alive_bar
 
 from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_app_usage_in_all_users
+from analyse.graph.application import AppCategory
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
 from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, \
@@ -44,3 +45,5 @@ def app_usage_in_all_users():
 
 
 app_usage_in_all_users()
+# 紧接着往excel表中添加app分类信息
+AppCategory.export_app_category()
