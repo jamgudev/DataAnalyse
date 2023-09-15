@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -73,6 +75,11 @@ plt.subplots_adjust(top=0.94, left=0.05, right=0.95, bottom=0.25)
 
 # 显示标签在图表的下方
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol=8, fontsize=fontSize)
+
+# 保存图像
+current_dir = os.path.dirname(os.path.abspath(__file__))
+save_path = os.path.join(current_dir, 'GRAPH_app_usage_in_all_users_2.png')
+plt.savefig(save_path)
 
 # 显示图形
 plt.show()

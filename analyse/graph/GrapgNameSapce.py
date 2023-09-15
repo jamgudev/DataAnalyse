@@ -13,6 +13,7 @@ GRAPH_mean_IS_count_in_hour_per_day_for_all_users = "mean_IS_count_in_hour_per_d
 GRAPH_all_interactions_cdf = "all_interactions_cdf.xlsx"
 GRAPH_app_usage_in_all_users = "app_usage_in_all_users.xlsx"
 GRAPH_app_categories = "app_categories.xlsx"
+GRAPH_app_open_num_per_session = "app_open_num_per_session.xlsx"
 
 
 # session

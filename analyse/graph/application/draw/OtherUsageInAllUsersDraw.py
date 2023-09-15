@@ -6,11 +6,9 @@ import matplotlib.pyplot as plt
 from analyse.graph.GrapgNameSapce import GRAPH_app_usage_in_all_users
 from analyse.util.FilePathDefinition import OUTPUT_FILE, TEST_OUTPUT_FILE
 from util import ExcelUtil
-# 数据预处理
-# 1. 去掉title
 # 读取Excel文件
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_usage_in_all_users
-df = ExcelUtil.read_excel(dirName)
+df = ExcelUtil.read_excel(dirName)[1:]
 
 # 使用列索引定位列
 user_col_index = 0  # 用户列索引
@@ -21,10 +19,6 @@ time_col_index = 2  # 使用时间列索引
 df.iloc[:, app_col_index] = df.iloc[:, app_col_index].str.replace(r'^[^.]*\.', '', regex=True)
 # 将时间值转换为分钟
 df.iloc[:, time_col_index] = df.iloc[:, time_col_index] / (60 * 1000)
-
-# 计算每个用户的总使用时长
-# 按 user_col_index分组后，取time_col_index列求和
-user_total_time = df.groupby(df.iloc[:, user_col_index])[time_col_index].sum()
 
 # 计算每个用户每个app的使用时长占该用户总使用时长的比例
 df['TimeRatio'] = df.groupby(df.iloc[:, user_col_index])[time_col_index].transform(lambda x: x / x.sum()).fillna(0)
