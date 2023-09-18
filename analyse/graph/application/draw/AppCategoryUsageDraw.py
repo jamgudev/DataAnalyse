@@ -26,7 +26,7 @@ total_time = category_times.sum()
 category_ratios = category_times / total_time
 
 # 将比率小于1%的类别归为"minority"类别
-minority_threshold = 0.01
+minority_threshold = 0.005
 category_ratios_minority = category_ratios[category_ratios < minority_threshold]
 category_ratios_majority = category_ratios[category_ratios >= minority_threshold]
 

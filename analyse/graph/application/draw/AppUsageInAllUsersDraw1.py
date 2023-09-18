@@ -57,12 +57,13 @@ for i, col in enumerate(user_category_percentage.columns):
 
 # 设置图形的标题和标签
 fontSize = 30
-ax.set_title('App Usage Time Percentage by Category', fontsize=fontSize)
-ax.set_xlabel('User ID', fontsize=fontSize)
-ax.set_ylabel('Percentage', fontsize=fontSize)
+# ax.set_title('App Usage Time Percentage by Category', fontsize=fontSize)
+ax.set_xlabel('User', fontsize=fontSize)
+ax.set_ylabel('App Usage Time Ratio', fontsize=fontSize)
 ax.tick_params(axis='x', labelsize=fontSize)
 ax.tick_params(axis='y', labelsize=fontSize)
 ax.set_xlim(-1, 45)
+ax.set_ylim(0.0, 1.0)
 
 # 设置x轴刻度和标签
 x_labels = range(1, len(user_category_percentage.index) + 1)

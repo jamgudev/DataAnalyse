@@ -21,6 +21,7 @@ plt.bar(df.iloc[:, 0], df['session_ratio'])
 plt.xlabel("App Open Count")
 plt.ylabel("Session Ratio")
 plt.title("Session Ratio by App Open Count")
+plt.xlim(0, 15)
 
 # 保存图像
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,3 +29,4 @@ save_path = os.path.join(current_dir, 'GRAPH_app_open_num_per_session.png')
 plt.savefig(save_path)
 
 plt.show()
+
