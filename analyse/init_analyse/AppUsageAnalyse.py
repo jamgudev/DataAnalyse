@@ -1,14 +1,14 @@
 import os.path
 import re
+import warnings
 
 import pandas as pd
-
-from util import TimeUtils, ExcelUtil, JLog, StringUtil
-import warnings
 from pandas import DataFrame
 
+from analyse.graph.application import AppCategory
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
     EXPORT_SESSION_SUMMARY, PP_HEADERS
+from util import TimeUtils, ExcelUtil, JLog, StringUtil
 
 warnings.filterwarnings('ignore')
 
@@ -46,14 +46,15 @@ class AppDetailUsage:
     # class_name    页面名
     # use_time      这个页面在一天中的什么时间被浏览
     # duration      在这个页面累计停留时间
-    # network_spent 在这个页面消耗的流量
     def __init__(self,
                  app_name: str,
+                 category: str,
                  page_name: str,
                  start_time: str,
                  duration: int,
                  network_spent: float):
         self.app_name = app_name
+        self.category = category
         self.page_name = page_name
         self.start_time = start_time
         self.duration = duration
@@ -86,9 +87,10 @@ class AppDetailUsage:
         self.units_mem_mapped = 0.0
         self.total_power_consumption = 0.0
         self.all_units_power = []
+    # network_spent 在这个页面消耗的流量
 
     def to_excel_list(self) -> []:
-        return [self.app_name, self.page_name, self.start_time, self.duration, self.network_spent, self.units_screen_brightness,
+        return [self.app_name, self.category, self.page_name, self.start_time, self.duration, self.network_spent, self.units_screen_brightness,
                 self.units_music_on, self.units_phone_ring, self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network,
                 self.units_3g_network, self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
                 self.units_network_speed, self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4,
@@ -96,18 +98,9 @@ class AppDetailUsage:
                 self.units_mem_dirty, self.units_mem_anonPages, self.units_mem_mapped, self.total_power_consumption]
 
     @staticmethod
-    def from_list(detailUsageList: []):
-        if len(detailUsageList) == 5:
-            detailUsage = AppDetailUsage(detailUsageList[0], detailUsageList[1],
-                                         detailUsageList[2], detailUsageList[3],
-                                         detailUsageList[4])
-            return detailUsage
-        return None
-
-    @staticmethod
     def excel_header() -> []:
         unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
-        app_usages_headers = ["包名", "页面名", "这个页面在一天中的什么时间被浏览", "在这个页面累计停留时间", "在这个页面消耗的流量"]
+        app_usages_headers = ["包名", "类名", "页面名", "这个页面在一天中的什么时间被浏览", "在这个页面累计停留时间", "在这个页面消耗的流量"]
         app_usages_headers.extend(unit_headers)
         return app_usages_headers
 
@@ -162,6 +155,7 @@ class AppSummeryUsage:
     # app_network_spent             APP累计消耗的流量
     def __init__(self,
                  app_name: str,
+                 app_category: str,
                  app_open_times: int,
                  page_open_set: set,
                  page_stay_longest_name: str,
@@ -173,6 +167,7 @@ class AppSummeryUsage:
                  app_stay_duration: int,
                  app_network_spent: float):
         self.app_name = app_name
+        self.app_category = app_category
         self.app_open_times = app_open_times
         self.page_open_set = page_open_set
         self.page_stay_longest_name = page_stay_longest_name
@@ -213,7 +208,7 @@ class AppSummeryUsage:
         self.all_units_power = []
 
     def to_excel_list(self) -> []:
-        return [self.app_name, self.app_open_times, len(self.page_open_set), self.page_stay_longest_name,
+        return [self.app_name, self.app_category, self.app_open_times, len(self.page_open_set), self.page_stay_longest_name,
                 self.page_stay_longest_duration, self.page_stay_shortest_name, self.page_stay_shortest_duration,
                 self.page_stay_longest_network, self.page_stay_shortest_network, self.app_stay_duration,
                 self.app_network_spent, self.units_screen_brightness, self.units_music_on, self.units_phone_ring,
@@ -240,7 +235,7 @@ class AppSummeryUsage:
     @staticmethod
     def excel_header() -> []:
         unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
-        app_summary_headers = ["应用包名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
+        app_summary_headers = ["应用包名", "应用类名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
                                "停留最短时间的页面", "最短页面停留的时长", "停留最长时间的页面消耗的流量", "停留最短时间的页面消耗的流量",
                                "APP累计停留时间", "APP累计消耗的流量"]
         app_summary_headers.extend(unit_headers)
@@ -526,6 +521,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
         for detailUsage in tempUsages:
             # detailUsage = AppDetailUsage.from_list(detailUsage)
             appName = detailUsage.app_name
+            category = detailUsage.category
             networkSpent = detailUsage.network_spent
             pageName = detailUsage.page_name
             pageDuration = detailUsage.duration
@@ -556,7 +552,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
             else:
                 pageNameSet = set()
                 pageNameSet.add(pageName)
-                appSummaryUsage = AppSummeryUsage(appName, 1, pageNameSet,
+                appSummaryUsage = AppSummeryUsage(appName, category, 1, pageNameSet,
                                                   pageName, pageDuration, pageName,
                                                   pageDuration, networkSpent, networkSpent,
                                                   pageDuration, networkSpent)
@@ -585,18 +581,20 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, un
 
     appDetailUsages = []
     outAppDetailUsages = []
+    appCategoryDict = AppCategory.get_app_category_dict(outputRootDir)
     for i in range(appUsageRows):
         lineHeader = appUsageData.iloc[i, 0]
         if __filter_session_summery in lineHeader:
             break
         elif bool(re.match(__filter_app_usage_pattern, lineHeader)):
             appName = appUsageData.iloc[i, __app_name_idx]
+            category = AppCategory.get_app_category(outputRootDir, appName, appCategoryDict)
             appPage = appUsageData.iloc[i, __app_page_name_idx]
             startTime = appUsageData.iloc[i, __app_page_start_time_idx]
             endTime = appUsageData.iloc[i, __app_page_end_time_idx]
             pageDuration = appUsageData.iloc[i, __app_page_duration_time_idx]
             pageNetworkSpent = get_page_network_spent(powerData, startTime, endTime)
-            appDetailUsage = AppDetailUsage(appName, appPage, startTime, pageDuration, pageNetworkSpent)
+            appDetailUsage = AppDetailUsage(appName, category, appPage, startTime, pageDuration, pageNetworkSpent)
             appDetailUsage.add_unit_pw(get_unit_consumption(unitsPowerData, startTime, endTime))
             appDetailUsages.append(appDetailUsage.to_excel_list())
             outAppDetailUsages.append(appDetailUsage)

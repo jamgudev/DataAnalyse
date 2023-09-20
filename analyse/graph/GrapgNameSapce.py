@@ -14,6 +14,9 @@ GRAPH_all_interactions_cdf = "all_interactions_cdf.xlsx"
 GRAPH_app_usage_in_all_users = "app_usage_in_all_users.xlsx"
 GRAPH_app_categories = "app_categories.xlsx"
 GRAPH_app_open_num_per_session = "app_open_num_per_session.xlsx"
+GRAPH_app_page_usage_in_sns = "app_page_usage_in_sns.xlsx"
+GRAPH_app_page_usage_in_streaming = "app_page_usage_in_streaming.xlsx"
+GRAPH_app_page_usage_in_game = "app_page_usage_in_game.xlsx"
 
 
 # session
@@ -21,8 +24,12 @@ SS_APP_OPEN_NUM_IDX = 0
 SS_SESSION_LENGTH_IDX = 3
 SS_SESSION_START_TIME_IDX = 2
 # app detail usage
-AD_APP_NAME = 0
-AD_APP_DURATION = 3
+AD_APP_PKG_NAME = 0
+AD_APP_CATEGORY = 1
+AD_APP_PAGE_NAME = 2
+AD_APP_START_TIME = 3
+AD_APP_DURATION = 4
 # app summary usage
 AS_APP_NAME = 0
-AS_APP_DURATION = 9
+AS_APP_CATEGORY = 1
+AS_APP_DURATION = 10

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from analyse.graph.GrapgNameSapce import GRAPH_app_usage_in_all_users, GRAPH_app_categories
+from analyse.graph.application.draw import AppColor
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
@@ -53,7 +54,7 @@ app_total_ratio = app_total_time / app_total_time.sum()
 df.loc[df['TimeRatio'] < 0.05, df.columns[app_col_index]] = "minority"
 
 # 绘制条形累计占比图
-fig, ax = plt.subplots(figsize=(32, 20))
+fig, ax = plt.subplots(figsize=(32, 16))
 
 users = df.iloc[:, user_col_index].unique()
 bottom = [0] * len(users)
@@ -71,13 +72,6 @@ apps = list(apps) + [usage_ratio_less_than_5_percent_name]
 # 获取颜色循环器
 # cmap = plt.get_cmap('tab20')
 # colors = [cmap(i % cmap.N) for i in range(len(apps))]
-custom_colors = [
-    "#FF0000", "#B7FD01", "#FF69B4", "#D27B68", "#E2DA34", "#7FFF00", "#F0F0F0", "#F000F0", "#00F0F0", "#FFD6FE",
-    "#CC0000", "#00CC00", "#0000CC", "#A39D24", "#00CCCC", "#E54444", "#C0C0C0", "#0177FF", "#FE8D00", "#D0D2FF",
-    "#00688C", "#FB8282", "#FFFF11", "#111FFF", "#7E84FF", "#1FFF00", "#D2721C", "#FF001F", "#6FFF0F", "#F6F60F",
-    "#880000", "#008800", "#000088", "#888000", "#008888", "#880080", "#808080", "#FF1493", "#008080", "#FF6347",
-    "#7FFF00", "#0000FF", "#00C0C0", "#FFF000", "#8B008B", "#00EA6A", "#FF4500", "#48D1CC",
-]
 x = range(1, len(users) + 1)
 # for app in df.iloc[:, app_col_index].unique():
 for i, app in enumerate(apps):
@@ -86,7 +80,7 @@ for i, app in enumerate(apps):
     if app == usage_ratio_less_than_5_percent_name:
         ax.bar(x, app_ratios.values, bottom=bottom, label=app, color="black")
     else:
-        ax.bar(x, app_ratios.values, bottom=bottom, label=get_category_by_pkg_name(app), color=custom_colors[i])
+        ax.bar(x, app_ratios.values, bottom=bottom, label=get_category_by_pkg_name(app), color=AppColor.custom_colors[i])
     bottom += app_ratios
 
 fontSize = 28
@@ -101,7 +95,7 @@ ax.set_xticks(x_ticks)
 ax.set_xlim(0, 46)
 ax.set_ylim(0.0, 1.0)
 # 调整图表和标签的位置
-plt.subplots_adjust(top=0.96, left=0.05, right=0.95, bottom=0.65)
+plt.subplots_adjust(top=0.94, left=0.05, right=0.95, bottom=0.45)
 
 # 显示标签在图表的下方
 # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06), ncol=8, fontsize=fontSize)

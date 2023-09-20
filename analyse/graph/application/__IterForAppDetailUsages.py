@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from analyse.graph.GrapgNameSapce import AD_APP_NAME
+from analyse.graph.GrapgNameSapce import AD_APP_PKG_NAME
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_file_in_every_day, __TAG
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX
 from util import JLog
@@ -30,7 +30,7 @@ def iter_idx_app_detail_data_from_file_in_every_day(dirName: str, user_name: str
                 cols = dataFrame.shape[1]
                 if data_idxs:
                     for row in range(rows):
-                        str(dataFrame.iloc[row, AD_APP_NAME])
+                        str(dataFrame.iloc[row, AD_APP_PKG_NAME])
                         # 遍历row行，data_idx列需要的索引数据
                         for data_idx in data_idxs:
                             if cols <= data_idx:
