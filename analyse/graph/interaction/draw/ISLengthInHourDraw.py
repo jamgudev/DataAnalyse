@@ -10,7 +10,7 @@ from util import ExcelUtil
 
 # 读取Excel文件数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_mean_interactive_length_in_hour_for_all_users
-df = ExcelUtil.read_excel(dirName)
+df = ExcelUtil.read_excel(dirName)[1:]
 
 # 存储每一列的数据的列表
 data_lists = []

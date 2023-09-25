@@ -9,7 +9,7 @@ from util import ExcelUtil
 
 # 读取 Excel 表格数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_all_interactions_cdf
-df = ExcelUtil.read_excel(dirName)
+df = ExcelUtil.read_excel(dirName)[1:]
 
 # 取第一列数据
 data = df[0].values / 1000

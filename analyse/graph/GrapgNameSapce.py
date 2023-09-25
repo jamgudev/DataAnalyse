@@ -15,6 +15,7 @@ GRAPH_app_usage_in_all_users = "app_usage_in_all_users.xlsx"
 GRAPH_app_categories = "app_categories.xlsx"
 GRAPH_app_open_num_per_session = "app_open_num_per_session.xlsx"
 GRAPH_app_page_usage_in_sns = "app_page_usage_in_sns.xlsx"
+GRAPH_app_page_usage_in_all = "app_page_usage_in_all.xlsx"
 GRAPH_app_page_usage_in_streaming = "app_page_usage_in_streaming.xlsx"
 GRAPH_app_page_usage_in_game = "app_page_usage_in_game.xlsx"
 

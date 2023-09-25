@@ -7,13 +7,11 @@ from analyse.graph.GrapgNameSapce import GRAPH_user_mean_active_time_per_day_vs_
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
-# 数据预处理
-# 去掉title
-# 按User Active Times（D1），从小到大排序
-
 # 读取Excel文件
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day
-data = ExcelUtil.read_excel(dirName, header=0)
+data = ExcelUtil.read_excel(dirName, header=0)[1:]
+# 按User Active Times（D1），从小到大排序
+data = data.sort_values(data.columns[3], ascending=True)
 
 # 创建网格布局
 fig = plt.figure(figsize=(10, 10))  # 调整整个图形的大小
@@ -23,7 +21,7 @@ totalActiveTimePerDay = data.iloc[:, 0].apply(lambda x: x / (1000 * 60))
 userActiveTimePerDay = data.iloc[:, 1].apply(lambda x: x / (1000 * 60))
 activeSum = sum(userActiveTimePerDay)
 totalSum = sum(totalActiveTimePerDay)
-non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum)
+non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum * 100)
 ratios = [a / b for a, b in zip(userActiveTimePerDay, totalActiveTimePerDay)]
 user_id = [i for i in range(1, len(totalActiveTimePerDay) + 1)]
 
@@ -45,7 +43,7 @@ ax1.bar(x, totalActiveTimePerDay, width, alpha=1, color='white', edgecolor=edgec
 
 # 绘制第二个条形图，颜色较浅
 ax1.bar(x, userActiveTimePerDay, width, color='lightblue', edgecolor=edgecolors, label='IS length')
-ax1.text(max(x), max(totalActiveTimePerDay) - 20, f"NILR: {non_interactive_rate}", ha='right', va='top')
+ax1.text(max(x), max(totalActiveTimePerDay) - 20, f"NILR: {non_interactive_rate}%", ha='right', va='top')
 ax1.set_xlabel('Users')
 ax1.set_ylabel('Session Length Per Day(in mins)')
 ax1.set_title('All User')
@@ -56,7 +54,7 @@ totalActiveTimes = data.iloc[:, 2]
 userActiveTimes = data.iloc[:, 3]
 activeSum = sum(userActiveTimes)
 totalSum = sum(totalActiveTimes)
-non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum)
+non_interactive_rate = "{:.2f}".format((totalSum - activeSum) / totalSum * 100)
 
 ax2 = fig.add_subplot(gs[1])
 # ax2.plot(user_id, totalActiveTimes, 'v', label='Upper Limit')
@@ -69,7 +67,7 @@ ax2.bar(x, totalActiveTimes, width, alpha=1, color='white', edgecolor=edgecolors
 
 # 绘制第二个条形图，颜色较浅
 ax2.bar(x, userActiveTimes, width, color='lightblue', edgecolor=edgecolors, label='IS Count')
-ax2.text(12, max(totalActiveTimes) - 10, f"NICR: {non_interactive_rate}", ha='right', va='top')
+ax2.text(16, max(totalActiveTimes) - 10, f"NICR: {non_interactive_rate}%", ha='right', va='top')
 ax2.set_xlabel('Users')
 ax2.set_ylabel('Session Counts Per Day')
 ax2.set_title('All User')

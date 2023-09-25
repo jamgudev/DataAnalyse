@@ -6,12 +6,9 @@ from analyse.graph.GrapgNameSapce import GRAPH_mean_active_time_per_day_with_std
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
-# 数据预处理:
-# 1. 去掉title
-
 # 读取Excel文件
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_as_mean_session_length_in_week_day
-data = ExcelUtil.read_excel(dirName)
+data = ExcelUtil.read_excel(dirName)[1:]
 
 # 获取用户ID、上限、平均时间和下限列的数据
 weekDayMean = data.iloc[:, 0].apply(lambda x: x / (1000 * 60))

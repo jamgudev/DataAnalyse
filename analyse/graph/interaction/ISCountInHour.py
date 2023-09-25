@@ -61,6 +61,7 @@ def mean_IS_count_in_hour_per_day_for_all_users():
                             interactMeanSessionCountInHour.append(0)
                     allUserData.append(interactMeanSessionCountInHour)
                 bar()
+            allUserData.insert(0, list(range(24)))
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_mean_IS_count_in_hour_per_day_for_all_users)
 

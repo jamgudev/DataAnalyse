@@ -29,6 +29,7 @@ def all_interactions_cdf():
                             JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                 bar()
+            allInteractionData.insert(0, ["IS Session Length"])
             ExcelUtil.write_to_excel(allInteractionData, dirName, GRAPH_all_interactions_cdf)
 
 

@@ -8,10 +8,8 @@ from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_mean_session_length_vs_session_count_per_day_of_every_user
-data = ExcelUtil.read_excel(dirName)
+data = ExcelUtil.read_excel(dirName)[1:]
 
-# 数据预处理
-# 1. 去掉title
 
 # 提取 x 和 y 轴数据
 y = data.iloc[:, 1].values

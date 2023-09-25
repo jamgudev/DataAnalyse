@@ -5,7 +5,7 @@ import numpy as np
 from analyse.graph.GrapgNameSapce import GRAPH_app_page_usage_in_sns, GRAPH_app_page_usage_in_streaming, GRAPH_app_page_usage_in_game
 from analyse.graph.application.draw import AppColor
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, OUTPUT_FILE
-from util import ExcelUtila
+from util import ExcelUtil
 
 # 读取Excel数据
 # 读取Excel文件

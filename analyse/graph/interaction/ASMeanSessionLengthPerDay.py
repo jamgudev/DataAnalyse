@@ -43,6 +43,7 @@ def mean_active_time_per_day_with_std_of_every_user():
                     result.append(lowerEnd0fStd)
                     allUserData.append(result)
                 bar()
+            allUserData.insert(0, ["标准差上界", "均值", "标准差下界"])
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_mean_active_time_per_day_with_std_of_every_user)
 

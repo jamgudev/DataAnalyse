@@ -1,6 +1,7 @@
 from alive_progress import alive_bar
 
-from analyse.graph.GrapgNameSapce import SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX, GRAPH_mean_interactive_length_in_hour_for_all_users, SS_SESSION_START_TIME_IDX
+from analyse.graph.GrapgNameSapce import SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX, GRAPH_mean_interactive_length_in_hour_for_all_users, \
+    SS_SESSION_START_TIME_IDX
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list
 from analyse.util.FilePathDefinition import EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
@@ -60,6 +61,7 @@ def mean_interactive_length_in_hour_for_all_users():
                             interactMeanSessionLengthInHour.append(0)
                     allUserData.append(interactMeanSessionLengthInHour)
                 bar()
+            allUserData.insert(0, list(range(24)))
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_mean_interactive_length_in_hour_for_all_users)
 
