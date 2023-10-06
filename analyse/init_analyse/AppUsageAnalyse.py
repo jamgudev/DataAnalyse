@@ -1,3 +1,4 @@
+import math
 import os.path
 import re
 import warnings
@@ -471,7 +472,7 @@ class SessionSummery:
 def get_page_network_spent(powerData: DataFrame, pageStartTime: str, pageEndTime: str):
     powerDataRows = powerData.shape[0]
     if powerDataRows == 0:
-        return -1
+        return 0
     else:
         networkSpent = 0
         for row in range(powerDataRows):
@@ -593,6 +594,11 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, un
             startTime = appUsageData.iloc[i, __app_page_start_time_idx]
             endTime = appUsageData.iloc[i, __app_page_end_time_idx]
             pageDuration = appUsageData.iloc[i, __app_page_duration_time_idx]
+            # 出现错误的时候，可能会出现 endTime 为 ERROR:Activity Resume Event Unfinished的情况
+            # 这里做个兼容
+            if math.isnan(pageDuration):
+                pageDuration = 0
+                endTime = startTime
             pageNetworkSpent = get_page_network_spent(powerData, startTime, endTime)
             appDetailUsage = AppDetailUsage(appName, category, appPage, startTime, pageDuration, pageNetworkSpent)
             appDetailUsage.add_unit_pw(get_unit_consumption(unitsPowerData, startTime, endTime))

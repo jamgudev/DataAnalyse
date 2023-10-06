@@ -1,11 +1,10 @@
 from alive_progress import alive_bar
 
-from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_app_usage_in_all_users, AS_APP_CATEGORY
+from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_app_usage_in_all_users
 from analyse.graph.application import AppCategory
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, \
-    EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 
@@ -28,6 +27,8 @@ def app_usage_in_all_users():
                             # 遍历一天中的所有数据
                             for app_usage_idx, app_usage_name in enumerate(data[0]):
                                 appStayDuration = float(data[1][app_usage_idx])
+                                # 使用列表推导式将 'nan' 转换为 0
+                                # my_list = [0 if math.isnan(x) else x for x in my_list]
                                 if app_usage_name in appUsageDict:
                                     appUsageDict[app_usage_name] += appStayDuration
                                 else:

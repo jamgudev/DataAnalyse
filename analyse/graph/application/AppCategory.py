@@ -18,7 +18,7 @@ def export_app_category(dirName: str):
     if not (os.path.exists(categoriesFilePath)):
         oldDf = DataFrame()
     else:
-        oldDf = ExcelUtil.read_excel(categoriesFilePath)
+        oldDf = ExcelUtil.read_excel(categoriesFilePath)[1:]
 
     oldAppPkgNames = list(oldDf.iloc[:, 0])
     oldAppCategories = list(oldDf.iloc[:, 1])
@@ -26,7 +26,7 @@ def export_app_category(dirName: str):
     newCategoryData = []
     for newAppName in list(all_unique_app_name):
         if newAppName not in oldAppPkgNames:
-            newCategoryData.append([newAppName])
+            newCategoryData.append([newAppName, "", ""])
 
     rows = df.shape[0]
     cols = df.shape[1]
@@ -52,7 +52,7 @@ def export_app_category(dirName: str):
 
     # 备份
     newCategoryData.insert(0, ["包名", "所属分类", "app名"])
-    newCategoryData.extend(oldDf)
+    newCategoryData.extend(oldDf.values)
     ExcelUtil.write_to_excel(newCategoryData, current_dir, GRAPH_app_categories)
     ExcelUtil.write_to_excel(newCategoryData, dirName, GRAPH_app_categories)
 
@@ -83,3 +83,13 @@ def get_app_category(dirName: str, pkgName: str, appCategoryDict: dict = None) -
         return appCategoryDict[pkgName]
     else:
         raise ValueError(f"pkgName:{pkgName} has not yet been classified.")
+
+
+def get_all_app_categories(dirName: str) -> list:
+    path = dirName + "/" + GRAPH_app_categories
+    if not (os.path.exists(dirName + "/" + GRAPH_app_categories)):
+        # 定义源文件路径和目标文件路径
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        path = current_dir + "/" + GRAPH_app_categories
+    categoryDf = ExcelUtil.read_excel(path)[1:]
+    return list(categoryDf.iloc[:, 1].unique())

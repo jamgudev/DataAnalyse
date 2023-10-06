@@ -51,6 +51,10 @@ def iter_idx_data_from_file_in_every_day(dirName: str, user_name: str, data_file
                                 continue
                             # targetData为row行，data_idx列具体的数据
                             targetData = str(dataFrame.iloc[row, data_idx])
+                            if targetData == 'nan':
+                                JLog.d("iter_idx_data_from_file_in_every_day", f"raw data:{dataFrame.iloc[row, data_idx]} "
+                                                                               f"row:{row}, col:{data_idx},"
+                                                                               f" filePath:{file}")
                             if data_idx in idxDataDict:
                                 idxDataDict[data_idx].append(targetData)
                             else:

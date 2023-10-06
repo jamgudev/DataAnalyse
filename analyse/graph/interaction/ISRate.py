@@ -9,8 +9,11 @@ from util import JLog, ExcelUtil
 
 
 # 用户每天主动触发的session与用户每天的session占比图
-def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
-    dirName = TEST_OUTPUT_FILE
+def user_mean_active_time_per_day_vs_total_mean_active_time_per_day(path: str = None):
+    if path is None:
+        dirName = TEST_OUTPUT_FILE
+    else:
+        dirName = path
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -50,12 +53,13 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day():
                     result.append(userActiveMean)
                     result.append(get_mean_of_list(totalActiveTimesPerDay))
                     result.append(get_mean_of_list(userActiveTimesPerDay))
+                    result.append(userName)
                     allUserData.append(result)
                 bar()
             allUserData.insert(0, ["用户每天Active总平均时长", "用户每天主动触发的Active平均时长",
-                                   "用户每天手机总Active次数", "用户每天手机中用户触发的Active次数"])
+                                   "用户每天手机总Active次数", "用户每天手机中用户触发的Active次数", "用户"])
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day)
 
 
-user_mean_active_time_per_day_vs_total_mean_active_time_per_day()
+# user_mean_active_time_per_day_vs_total_mean_active_time_per_day()
