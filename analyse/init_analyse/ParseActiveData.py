@@ -150,21 +150,6 @@ def filter_power_data_fun(fileName) -> bool:
     return filter_file_fun(fileName, [__CF_POWER_USAGE_FILTER])
 
 
-# 分析每个app_usage_file得到我们想要的数据
-def analyse_app_usage_file(input_root_path: str, app_usage_file_name: str, power_file_name: str):
-    outputRootPath = input_root_path.replace(INPUT, OUTPUT)
-    if not os.path.exists(outputRootPath):
-        os.makedirs(outputRootPath)
-
-    # load power data
-    powerFile = os.path.join(outputRootPath, power_file_name)
-    powerData = pd.read_excel(powerFile, header=None)
-
-    # load app usage data
-    appUsageFile = os.path.join(input_root_path, app_usage_file_name)
-    appUsageData = pd.read_excel(appUsageFile, header=None)
-
-
 # 合并所有power_data文件
 def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
     try:

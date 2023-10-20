@@ -8,7 +8,7 @@ from pandas import DataFrame
 
 from analyse.graph.application import AppCategory
 from analyse.util.FilePathDefinition import EXPORT_APP_DETAIL_USAGES, EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, \
-    EXPORT_SESSION_SUMMARY, PP_HEADERS
+    EXPORT_SESSION_SUMMARY, PP_HEADERS, PP_SUMMARY_HEADERS
 from util import TimeUtils, ExcelUtil, JLog, StringUtil
 
 warnings.filterwarnings('ignore')
@@ -188,31 +188,12 @@ class AppSummeryUsage:
         self.app_network_spent = app_network_spent
         self.units_base = 0.0
         self.units_screen_brightness = 0.0
-        self.units_music_on = 0.0
-        self.units_phone_ring = 0.0
-        self.units_phone_off_hook = 0.0
-        self.units_wifi_network = 0.0
-        self.units_2g_network = 0.0
-        self.units_3g_network = 0.0
-        self.units_4g_network = 0.0
-        self.units_5g_network = 0.0
-        self.units_other_network = 0.0
-        self.units_is_wifi_enable = 0.0
-        self.units_network_speed = 0.0
+        self.units_media = 0.0
+        self.units_network = 0.0
         self.units_bluetooth = 0.0
-        self.units_cpu0 = 0.0
-        self.units_cpu1 = 0.0
-        self.units_cpu2 = 0.0
-        self.units_cpu3 = 0.0
-        self.units_cpu4 = 0.0
-        self.units_cpu5 = 0.0
-        self.units_cpu6 = 0.0
-        self.units_cpu7 = 0.0
+        self.units_cpu = 0.0
         # self.units_mem_available = 0.0
-        self.units_mem_active = 0.0
-        self.units_mem_dirty = 0.0
-        # self.units_mem_anonPages = 0.0
-        self.units_mem_mapped = 0.0
+        self.units_mem = 0.0
         self.total_power_consumption = 0.0
         self.all_units_power = []
 
@@ -220,16 +201,8 @@ class AppSummeryUsage:
         return [self.app_name, self.app_category, self.app_open_times, len(self.page_open_set), self.page_stay_longest_name,
                 self.page_stay_longest_duration, self.page_stay_shortest_name, self.page_stay_shortest_duration,
                 self.page_stay_longest_network, self.page_stay_shortest_network, self.app_stay_duration,
-                self.app_network_spent, self.units_base, self.units_screen_brightness, self.units_music_on,
-                self.units_phone_ring, self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network,
-                self.units_3g_network, self.units_4g_network, self.units_5g_network, self.units_other_network,
-                self.units_is_wifi_enable, self.units_network_speed, self.units_bluetooth,self.units_cpu0,
-                self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4, self.units_cpu5,
-                self.units_cpu6, self.units_cpu7,
-                # self.units_mem_available,
-                self.units_mem_active, self.units_mem_dirty,
-                # self.units_mem_anonPages,
-                self.units_mem_mapped,
+                self.app_network_spent, self.units_base, self.units_screen_brightness, self.units_media,
+                self.units_network, self.units_bluetooth, self.units_cpu, self.units_mem,
                 self.total_power_consumption]
 
     # @staticmethod
@@ -247,7 +220,7 @@ class AppSummeryUsage:
 
     @staticmethod
     def excel_header() -> []:
-        unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
+        unit_headers = PP_SUMMARY_HEADERS[1:len(PP_SUMMARY_HEADERS)]
         app_summary_headers = ["应用包名", "应用类名", "app累计打开次数", "累计打开的所有页面", "停留最长时间的页面", "最长页面停留的时长",
                                "停留最短时间的页面", "最短页面停留的时长", "停留最长时间的页面消耗的流量", "停留最短时间的页面消耗的流量",
                                "APP累计停留时间", "APP累计消耗的流量"]
@@ -257,31 +230,29 @@ class AppSummeryUsage:
     def add_up_units_power(self, detailUsage: AppDetailUsage):
         self.units_base += detailUsage.units_base
         self.units_screen_brightness += detailUsage.units_screen_brightness
-        self.units_music_on += detailUsage.units_music_on
-        self.units_phone_ring += detailUsage.units_phone_ring
-        self.units_phone_off_hook += detailUsage.units_phone_off_hook
-        self.units_wifi_network += detailUsage.units_wifi_network
-        self.units_2g_network += detailUsage.units_2g_network
-        self.units_3g_network += detailUsage.units_3g_network
-        self.units_4g_network += detailUsage.units_4g_network
-        self.units_5g_network += detailUsage.units_5g_network
-        self.units_other_network += detailUsage.units_other_network
-        self.units_is_wifi_enable += detailUsage.units_is_wifi_enable
-        self.units_network_speed += detailUsage.units_network_speed
+        self.units_media += detailUsage.units_music_on
+        self.units_media += detailUsage.units_phone_ring
+        self.units_media += detailUsage.units_phone_off_hook
+        self.units_network += detailUsage.units_wifi_network
+        self.units_network += detailUsage.units_2g_network
+        self.units_network += detailUsage.units_3g_network
+        self.units_network += detailUsage.units_4g_network
+        self.units_network += detailUsage.units_5g_network
+        self.units_network += detailUsage.units_other_network
+        self.units_network += detailUsage.units_is_wifi_enable
+        self.units_network += detailUsage.units_network_speed
         self.units_bluetooth += detailUsage.units_bluetooth
-        self.units_cpu0 += detailUsage.units_cpu0
-        self.units_cpu1 += detailUsage.units_cpu1
-        self.units_cpu2 += detailUsage.units_cpu2
-        self.units_cpu3 += detailUsage.units_cpu3
-        self.units_cpu4 += detailUsage.units_cpu4
-        self.units_cpu5 += detailUsage.units_cpu5
-        self.units_cpu6 += detailUsage.units_cpu6
-        self.units_cpu7 += detailUsage.units_cpu7
-        # self.units_mem_available += detailUsage.units_mem_available
-        self.units_mem_active += detailUsage.units_mem_active
-        # self.units_mem_anonPages += detailUsage.units_mem_anonPages
-        self.units_mem_dirty += detailUsage.units_mem_dirty
-        self.units_mem_mapped += detailUsage.units_mem_mapped
+        self.units_cpu += detailUsage.units_cpu0
+        self.units_cpu += detailUsage.units_cpu1
+        self.units_cpu += detailUsage.units_cpu2
+        self.units_cpu += detailUsage.units_cpu3
+        self.units_cpu += detailUsage.units_cpu4
+        self.units_cpu += detailUsage.units_cpu5
+        self.units_cpu += detailUsage.units_cpu6
+        self.units_cpu += detailUsage.units_cpu7
+        self.units_mem += detailUsage.units_mem_active
+        self.units_mem += detailUsage.units_mem_dirty
+        self.units_mem += detailUsage.units_mem_mapped
         self.total_power_consumption += detailUsage.total_power_consumption
 
     # def __get_total_power_consumption(self):
@@ -348,31 +319,11 @@ class SessionSummery:
         self.app_stay_shortest_network = 0.0
         self.units_base = 0.0
         self.units_screen_brightness = 0.0
-        self.units_music_on = 0.0
-        self.units_phone_ring = 0.0
-        self.units_phone_off_hook = 0.0
-        self.units_wifi_network = 0.0
-        self.units_2g_network = 0.0
-        self.units_3g_network = 0.0
-        self.units_4g_network = 0.0
-        self.units_5g_network = 0.0
-        self.units_other_network = 0.0
-        self.units_is_wifi_enable = 0.0
-        self.units_network_speed = 0.0
+        self.units_media = 0.0
+        self.units_network = 0.0
         self.units_bluetooth = 0.0
-        self.units_cpu0 = 0.0
-        self.units_cpu1 = 0.0
-        self.units_cpu2 = 0.0
-        self.units_cpu3 = 0.0
-        self.units_cpu4 = 0.0
-        self.units_cpu5 = 0.0
-        self.units_cpu6 = 0.0
-        self.units_cpu7 = 0.0
-        # self.units_mem_available = 0.0
-        self.units_mem_active = 0.0
-        self.units_mem_dirty = 0.0
-        # self.units_mem_anonPages = 0.0
-        self.units_mem_mapped = 0.0
+        self.units_cpu = 0.0
+        self.units_mem = 0.0
         self.total_power_consumption = 0.0
         self.all_units_power = []
 
@@ -381,17 +332,8 @@ class SessionSummery:
                 self.session_network_spent, self.app_open_most_frequently_name, self.app_open_most_frequently_times,
                 self.app_open_least_frequently_name, self.app_open_least_frequently_times, self.app_stay_longest_name,
                 self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
-                self.app_stay_longest_network, self.app_stay_shortest_network,
-                self.units_base, self.units_screen_brightness,
-                self.units_music_on, self.units_phone_ring, self.units_phone_off_hook, self.units_wifi_network,
-                self.units_2g_network, self.units_3g_network, self.units_4g_network, self.units_5g_network,
-                self.units_other_network, self.units_is_wifi_enable, self.units_network_speed, self.units_bluetooth,
-                self.units_cpu0, self.units_cpu1, self.units_cpu2, self.units_cpu3, self.units_cpu4, self.units_cpu5,
-                self.units_cpu6, self.units_cpu7,
-                # self.units_mem_available,
-                self.units_mem_active, self.units_mem_dirty,
-                # self.units_mem_anonPages,
-                self.units_mem_mapped,
+                self.app_stay_longest_network, self.app_stay_shortest_network, self.units_base, self.units_screen_brightness,
+                self.units_media, self.units_network, self.units_bluetooth, self.units_cpu, self.units_mem,
                 self.total_power_consumption]
 
     @staticmethod
@@ -402,7 +344,7 @@ class SessionSummery:
 
     @staticmethod
     def excel_header() -> []:
-        unit_headers = PP_HEADERS[1:len(PP_HEADERS)]
+        unit_headers = PP_SUMMARY_HEADERS[1:len(PP_SUMMARY_HEADERS)]
         headers = ["session期间不同App打开数量", "session期间不同页面打开数量", "session开始时间", "session持续时间",
                 "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
                 "同个app被打开最少的次数", "session期间使用最久的App名", "session期间在某个APP停留的最长时间",
@@ -446,31 +388,11 @@ class SessionSummery:
     def add_up_units_power(self, summaryUsage: AppSummeryUsage):
         self.units_base += summaryUsage.units_base
         self.units_screen_brightness += summaryUsage.units_screen_brightness
-        self.units_music_on += summaryUsage.units_music_on
-        self.units_phone_ring += summaryUsage.units_phone_ring
-        self.units_phone_off_hook += summaryUsage.units_phone_off_hook
-        self.units_wifi_network += summaryUsage.units_wifi_network
-        self.units_2g_network += summaryUsage.units_2g_network
-        self.units_3g_network += summaryUsage.units_3g_network
-        self.units_4g_network += summaryUsage.units_4g_network
-        self.units_5g_network += summaryUsage.units_5g_network
-        self.units_other_network += summaryUsage.units_other_network
-        self.units_is_wifi_enable += summaryUsage.units_is_wifi_enable
-        self.units_network_speed += summaryUsage.units_network_speed
+        self.units_media += summaryUsage.units_media
+        self.units_network += summaryUsage.units_network
         self.units_bluetooth += summaryUsage.units_bluetooth
-        self.units_cpu0 += summaryUsage.units_cpu0
-        self.units_cpu1 += summaryUsage.units_cpu1
-        self.units_cpu2 += summaryUsage.units_cpu2
-        self.units_cpu3 += summaryUsage.units_cpu3
-        self.units_cpu4 += summaryUsage.units_cpu4
-        self.units_cpu5 += summaryUsage.units_cpu5
-        self.units_cpu6 += summaryUsage.units_cpu6
-        self.units_cpu7 += summaryUsage.units_cpu7
-        # self.units_mem_available += summaryUsage.units_mem_available
-        self.units_mem_active += summaryUsage.units_mem_active
-        # self.units_mem_anonPages += summaryUsage.units_mem_anonPages
-        self.units_mem_dirty += summaryUsage.units_mem_dirty
-        self.units_mem_mapped += summaryUsage.units_mem_mapped
+        self.units_cpu += summaryUsage.units_cpu
+        self.units_mem += summaryUsage.units_mem
         self.total_power_consumption += summaryUsage.total_power_consumption
         # self.__get_total_power_consumption()
 

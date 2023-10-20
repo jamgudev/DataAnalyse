@@ -66,3 +66,5 @@ PP_HEADERS = ["time_stamp", "基础功耗", "screen_brightness", "music_on", "ph
               # "mem_anonPages",
               "mem_mapped",
               "总功耗"]
+PP_SUMMARY_HEADERS = ["time_stamp", "基础功耗", "screen_brightness", "media", "network",
+                      "bluetooth", "cpu", "mem", "总功耗"]
