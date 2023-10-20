@@ -3,7 +3,7 @@ import os.path
 import pandas as pd
 
 io = "./depart_test_case/input/all.xlsx"  # 目标文件
-data = pd.read_excel(io, header=None)
+data = pd.read_excel(io, header=None)[1:]
 
 rows = data.shape[0]  # 获取行数 shape[1]获取列数
 cols_list = []
@@ -25,8 +25,6 @@ for i in range(rows):
 outDir = "./depart_test_case/output/"
 testDir = outDir + "all_test.xlsx"
 trainDir = outDir + "all_train.xlsx"
-print(testDir)
-print(trainDir)
 if not os.path.exists(outDir):
     os.makedirs(outDir)
 testDF = pd.DataFrame(test_rows)

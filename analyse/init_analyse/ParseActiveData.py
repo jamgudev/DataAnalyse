@@ -189,7 +189,9 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
                     if lineNum == 0:
                         continue
 
-                    singleLine = data.iloc[lineNum]
+                    # 到network_spend
+                    singleLine = data.iloc[lineNum,
+                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 13, 14, 15, 16, 17, 18, 19, 20, 23, 24, 26]]
                     powerData.append(singleLine)
             else:
                 JLog.d(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
@@ -207,7 +209,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
 # 输出功耗文件，并返回路径
 def export_units_power(dirName: str, powerDataPath: str) -> str:
     if isinstance(powerDataPath, str) and powerDataPath == "" or (not os.path.exists(powerDataPath)):
-        JLog.e(__TAG, f"export_units_power failed: userName[{get_user_name(dirName)}], "
+        JLog.e(__TAG, f"export_units_power failed: dirName[{dirName}], "
                       f"file from powerDataPath[{powerDataPath}] not exists, skipped.")
         return ""
 
@@ -220,7 +222,6 @@ def export_units_power(dirName: str, powerDataPath: str) -> str:
             JLog.i(__TAG, f"export_units_power: userName[{get_user_name(dirName)}], power file {outputFileName} already exist, skipped.")
             return unitAbsFileName
 
-        # TODO 要确认是否携带了header
         powerData = ExcelUtil.read_excel(powerDataPath, 1)
         userName = get_user_name(outputDir)
         dirName = dirName[0: get_mobile_number_start_pos(dirName) - 1]
@@ -237,16 +238,18 @@ def export_units_power(dirName: str, powerDataPath: str) -> str:
                     matrixData = powerData.iloc[row, col]
                     # 跳过时间戳
                     if col == 0:
+                        # 添加基础功耗
+                        base = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col])
+                        totalPower += base
                         unitPower.append(matrixData)
+                        unitPower.append(base)
                         continue
                     else:
-                        theta = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col - 1])
-                        mu = float(paramsData.iloc[POWER_PARAMS_MU_IDX, col - 1])
-                        sigma = float(paramsData.iloc[POWER_PARAMS_SIGMA_IDX, col - 1])
-                        if sigma == 0:
-                            featureNormalizeVal = 0
-                        else:
-                            featureNormalizeVal = (float(matrixData) - mu) / sigma
+                        # 计算各部件功耗并添加
+                        theta = float(paramsData.iloc[POWER_PARAMS_THETA_IDX, col])
+                        mu = float(paramsData.iloc[POWER_PARAMS_MU_IDX, col])
+                        sigma = float(paramsData.iloc[POWER_PARAMS_SIGMA_IDX, col])
+                        featureNormalizeVal = __feature_normalize("max", mu, sigma, float(matrixData))
                         powerConsumption = featureNormalizeVal * theta
                         totalPower += powerConsumption
                         unitPower.append(powerConsumption)
@@ -266,6 +269,24 @@ def export_units_power(dirName: str, powerDataPath: str) -> str:
                       f" powerParamFilePath = {powerParamFilePath}, e = {e}")
     return ""
 
+
+def __feature_normalize(pattern: str, a: float, b: float, data: float) -> float:
+    if pattern == "mean":
+        mu = a
+        sigma = b
+        if sigma == 0:
+            return 0.0
+        else:
+            return (data - mu) / sigma
+    elif pattern == "max":
+        minV = a
+        maxV = b
+        divider = maxV - minV
+        if divider == 0:
+            return 0.0
+        return (data - minV) / divider
+    else:
+        raise ValueError(f"pattern[{pattern}] not specified or un-known.")
 
 # USER_NAME = INPUT_FILE + "/13266826670"
 # activeRootPath = USER_NAME + "/" + CF_ACTIVITY_DIR
