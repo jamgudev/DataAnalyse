@@ -2,7 +2,7 @@ import os.path
 
 import pandas as pd
 
-io = "./depart_test_case/input/all.xlsx"  # 目标文件
+io = "./depart_test_case/input/all_10_301.xlsx"  # 目标文件
 data = pd.read_excel(io, header=None)[1:]
 
 rows = data.shape[0]  # 获取行数 shape[1]获取列数
