@@ -176,7 +176,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
 
                     # 到network_spend
                     singleLine = data.iloc[lineNum,
-                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 13, 14, 15, 16, 17, 18, 19, 20, 23, 24, 26]]
+                        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26]]
                     powerData.append(singleLine)
             else:
                 JLog.d(__TAG, f"merge_all_power_data, userName[{StringUtil.get_user_name(intputRootPath)}], "
@@ -269,7 +269,7 @@ def __feature_normalize(pattern: str, a: float, b: float, data: float) -> float:
         divider = maxV - minV
         if divider == 0:
             return 0.0
-        return (data - minV) / divider
+        return abs(data - minV) / divider
     else:
         raise ValueError(f"pattern[{pattern}] not specified or un-known.")
 

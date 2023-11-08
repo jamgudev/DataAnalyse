@@ -61,9 +61,9 @@ PP_MEM_MEM_MAPPED_IDX = 26
 PP_HEADERS = ["time_stamp", "基础功耗", "screen_brightness", "music_on", "phone_ring", "phone_off_hook", "wifi_network",
               "2g_network", "3g_network", "4g_network", "5g_network", "other_network", "is_wifi_enable",
               "network_speed", "bluetooth", "cpu0", "cpu1", "cpu2", "cpu3", "cpu4", "cpu5", "cpu6", "cpu7",
-              # "mem_available",
+              "mem_available",
               "mem_active", "mem_dirty",
-              # "mem_anonPages",
+              "mem_anonPages",
               "mem_mapped",
               "总功耗"]
 PP_SUMMARY_HEADERS = ["time_stamp", "基础功耗", "screen_brightness", "media", "network",

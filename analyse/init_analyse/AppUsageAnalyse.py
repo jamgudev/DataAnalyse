@@ -82,10 +82,10 @@ class AppDetailUsage:
         self.units_cpu5 = 0.0
         self.units_cpu6 = 0.0
         self.units_cpu7 = 0.0
-        # self.units_mem_available = 0.0
+        self.units_mem_available = 0.0
         self.units_mem_active = 0.0
         self.units_mem_dirty = 0.0
-        # self.units_mem_anonPages = 0.0
+        self.units_mem_anonPages = 0.0
         self.units_mem_mapped = 0.0
         self.total_power_consumption = 0.0
         self.all_units_power = []
@@ -96,11 +96,14 @@ class AppDetailUsage:
                 self.units_base, self.units_screen_brightness, self.units_music_on, self.units_phone_ring,
                 self.units_phone_off_hook, self.units_wifi_network, self.units_2g_network, self.units_3g_network,
                 self.units_4g_network, self.units_5g_network, self.units_other_network, self.units_is_wifi_enable,
-                self.units_network_speed, self.units_bluetooth, self.units_cpu0, self.units_cpu1, self.units_cpu2,
+                self.units_network_speed,
+                self.units_bluetooth,
+                self.units_cpu0, self.units_cpu1, self.units_cpu2,
                 self.units_cpu3, self.units_cpu4, self.units_cpu5, self.units_cpu6, self.units_cpu7,
-                # self.units_mem_available,
-                self.units_mem_active, self.units_mem_dirty,
-                # self.units_mem_anonPages,
+                self.units_mem_available,
+                self.units_mem_active,
+                self.units_mem_dirty,
+                self.units_mem_anonPages,
                 self.units_mem_mapped,
                 self.total_power_consumption]
 
@@ -129,7 +132,7 @@ class AppDetailUsage:
         self.units_other_network = unit_pws[11]
         self.units_is_wifi_enable = unit_pws[12]
         self.units_network_speed = unit_pws[13]
-        self.units_bluetooth = unit_pws[14]
+        self.units_bluetooth = 0.0
         self.units_cpu0 = unit_pws[15]
         self.units_cpu1 = unit_pws[16]
         self.units_cpu2 = unit_pws[17]
@@ -138,12 +141,12 @@ class AppDetailUsage:
         self.units_cpu5 = unit_pws[20]
         self.units_cpu6 = unit_pws[21]
         self.units_cpu7 = unit_pws[22]
-        # self.units_mem_available = unit_pws[23]
-        self.units_mem_active = unit_pws[23]
-        self.units_mem_dirty = unit_pws[24]
-        # self.units_mem_anonPages = unit_pws[25]
-        self.units_mem_mapped = unit_pws[25]
-        self.total_power_consumption += unit_pws[26]
+        self.units_mem_available = unit_pws[23]
+        self.units_mem_active = unit_pws[24]
+        self.units_mem_dirty = unit_pws[25]
+        self.units_mem_anonPages = unit_pws[26]
+        self.units_mem_mapped = unit_pws[27]
+        self.total_power_consumption += unit_pws[28]
         self.all_units_power = unit_pws
 
 
@@ -250,8 +253,10 @@ class AppSummeryUsage:
         self.units_cpu += detailUsage.units_cpu5
         self.units_cpu += detailUsage.units_cpu6
         self.units_cpu += detailUsage.units_cpu7
+        self.units_mem += detailUsage.units_mem_available
         self.units_mem += detailUsage.units_mem_active
         self.units_mem += detailUsage.units_mem_dirty
+        self.units_mem += detailUsage.units_mem_anonPages
         self.units_mem += detailUsage.units_mem_mapped
         self.total_power_consumption += detailUsage.total_power_consumption
 
