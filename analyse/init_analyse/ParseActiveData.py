@@ -7,10 +7,11 @@ import pandas as pd
 from alive_progress import alive_bar
 
 from analyse.init_analyse import AppUsageAnalyse
+from analyse.init_analyse.power_params import PowerParamsUtil
 from analyse.util.AnalyseUtils import filter_file_fun
 from analyse.util.FilePathDefinition import CF_OUTPUT_POWER_USAGE, \
     EXCEL_SUFFIX, POWER_PARAMS_THETA_IDX, POWER_PARAMS_SIGMA_IDX, POWER_PARAMS_MU_IDX, EXPORT_UNITS_POWER, PP_HEADERS, \
-    CF_ACTIVITY_DIR, POWER_PARAMS_MAT, INPUT, OUTPUT, POWER
+    CF_ACTIVITY_DIR, POWER_PARAMS_MAT, INPUT, OUTPUT, POWER, POWER_PARAMS_LIST, POWER_PARAMS_DIR
 from util import JLog, ExcelUtil, StringUtil
 from util.StringUtil import get_user_name, get_mobile_number_start_pos
 
@@ -210,7 +211,8 @@ def export_units_power(dirName: str, powerDataPath: str) -> str:
         powerData = ExcelUtil.read_excel(powerDataPath, 1)
         userName = get_user_name(outputDir)
         dirName = dirName[0: get_mobile_number_start_pos(dirName) - 1]
-        powerParamFilePath = dirName + "/" + userName + "/" + POWER_PARAMS_MAT
+        userPowerParamsFileDirName = PowerParamsUtil.get_power_params_dir_by_user_name(userName)
+        powerParamFilePath = POWER_PARAMS_DIR + "/" + userPowerParamsFileDirName + "/" + POWER_PARAMS_MAT
         paramsData = ExcelUtil.read_excel(powerParamFilePath, 2)
         if not powerData.empty:
             powerDataRows = powerData.shape[0]
