@@ -2,7 +2,7 @@ from analyse.util.FilePathDefinition import POWER_PARAMS_LIST
 from util import ExcelUtil
 
 
-def get_power_params_dir_dict() -> dict:
+def get_phone_brand_dir_dict() -> dict:
     paramsListDF = ExcelUtil.read_excel(POWER_PARAMS_LIST)
     if len(paramsListDF) == 0:
         raise FileNotFoundError(f"filePath:[{POWER_PARAMS_LIST}] not found.")
@@ -17,8 +17,8 @@ def get_power_params_dir_dict() -> dict:
         return paramsDict
 
 
-def get_power_params_dir_by_user_name(user_name: str) -> str:
-    paramsDict = get_power_params_dir_dict()
+def get_phone_brand_by_user_name(user_name: str) -> str:
+    paramsDict = get_phone_brand_dir_dict()
     if user_name in paramsDict:
         return paramsDict[user_name]
     else:

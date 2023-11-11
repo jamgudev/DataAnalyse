@@ -4,20 +4,22 @@ from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_UNIT_CS_TOTAL, AS_APP_C
     GRAPH_app_category_consumption
 from analyse.graph.application.AppCategory import get_all_app_categories
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
+from analyse.init_analyse.power_params import PowerParamsUtil
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 
-# 所有用户，在各个app使用的时间占用户各自总使用时间的占比
+# 不同用户，不同app类别功耗占所有app功耗的占比
 def app_category_consumption():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
         with alive_bar(len(allUserName), ctrl_c=True, force_tty=True, title=f'分析进度') as bar:
             allAppCategories = get_all_app_categories(dirName)
-            for userName in allUserName:
+            for user_idx, userName in enumerate(allUserName):
+                brand = PowerParamsUtil.get_phone_brand_by_user_name(userName)
                 unitsUsages = {}
                 totalConsumption = 0.0
                 dataOfEveryDay = iter_idx_data_from_file_in_every_day(dirName, userName,
@@ -41,11 +43,11 @@ def app_category_consumption():
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                     for ctg in allAppCategories:
                         if ctg in unitsUsages:
-                            allUserData.append([userName, ctg, unitsUsages[ctg], unitsUsages[ctg] / totalConsumption])
+                            allUserData.append([str(user_idx + 1), brand, ctg, unitsUsages[ctg], unitsUsages[ctg] / totalConsumption])
                         else:
-                            allUserData.append([userName, ctg, 0.0, 0.0])
+                            allUserData.append([str(user_idx + 1), brand, ctg, 0.0, 0.0])
                 bar()
-            allUserData.insert(0, ["用户名", "app类别", "消耗的功耗", "功耗占比"])
+            allUserData.insert(0, ["用户名", "手机型号", "app类别", "消耗的功耗", "功耗占比"])
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_app_category_consumption)
 

@@ -8,7 +8,7 @@ from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_AP
 from util import JLog, ExcelUtil
 
 
-# 所有用户，在各个app使用的时间占用户各自总使用时间的占比
+# 所有用户使用的所有app里，不同app page占该app的功耗比重
 def app_page_consumption():
     dirName = OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)

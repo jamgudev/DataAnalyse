@@ -28,7 +28,7 @@ def get_user_name(text: str):
     import re
     # 有时候可能text末尾不带/，这里手动补一个
     text += "/"
-    pattern = r'\b1[34578]\d{9}\b'
+    pattern = r'\b1[345789]\d{9}\b'
     matches = re.findall(pattern, text)
 
     if matches:
