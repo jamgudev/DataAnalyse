@@ -26,6 +26,10 @@ __app_page_duration_time_idx = 5
 __power_time_idx = 0
 __power_network_speed_idx = 12
 __session_for_search_row = "Session"
+__session_screen_on_time_idx = 1
+__session_did_not_present_str = "User Did Not Present"
+__session_present_time_idx = 2
+__session_screen_off_time_idx = 3
 __session_total_duration_idx = 4
 
 __filter_screen_on = "Screen On"
@@ -33,6 +37,58 @@ __filter_screen_off = "Screen Off"
 __filter_user_present = "User Present"
 __filter_app_usage_pattern = r'^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*$'
 __filter_session_summery = "Session Summarize"
+
+
+class NISPowerUsage:
+    def __init__(self, start_time: str, end_time: str):
+        self.start_time = start_time
+        self.end_time = end_time
+        # in mills
+        self.duration = TimeUtils.time_duration_with_mills(end_time, start_time)
+        self.units_base = 0.0
+        self.units_screen_brightness = 0.0
+        self.units_media = 0.0
+        self.units_network = 0.0
+        self.units_bluetooth = 0.0
+        self.units_cpu = 0.0
+        self.units_mem = 0.0
+        self.total_power_consumption = 0.0
+        self.all_units_power = []
+
+    def add_unit_pw(self, unit_pws: []):
+        if len(unit_pws) < 23:
+            JLog.i("AppDetailUsage", f"add_unit_pw failed: list [unit_pw] len {len(unit_pws)} less than 23, skipped.")
+            return
+        # 跳过第一个，是时间戳
+        self.units_base = unit_pws[1]
+        self.units_screen_brightness = unit_pws[2]
+        self.units_media += unit_pws[3]
+        self.units_media += unit_pws[4]
+        self.units_media += unit_pws[5]
+        self.units_network += unit_pws[6]
+        self.units_network += unit_pws[7]
+        self.units_network += unit_pws[8]
+        self.units_network += unit_pws[9]
+        self.units_network += unit_pws[10]
+        self.units_network += unit_pws[11]
+        self.units_network += unit_pws[12]
+        self.units_network += unit_pws[13]
+        self.units_bluetooth = 0.0
+        self.units_cpu += unit_pws[15]
+        self.units_cpu += unit_pws[16]
+        self.units_cpu += unit_pws[17]
+        self.units_cpu += unit_pws[18]
+        self.units_cpu += unit_pws[19]
+        self.units_cpu += unit_pws[20]
+        self.units_cpu += unit_pws[21]
+        self.units_cpu += unit_pws[22]
+        self.units_mem += unit_pws[23]
+        self.units_mem += unit_pws[24]
+        self.units_mem += unit_pws[25]
+        self.units_mem += unit_pws[26]
+        self.units_mem += unit_pws[27]
+        self.total_power_consumption += unit_pws[28]
+        self.all_units_power = unit_pws
 
 
 # app在一个session内使用的详细记录，包括各个页面的使用详情
@@ -322,6 +378,8 @@ class SessionSummery:
         self.app_stay_shortest_duration = 0
         self.app_stay_longest_network = 0.0
         self.app_stay_shortest_network = 0.0
+        self.nis_duration = 0.0
+        self.nis_power_consumption = 0.0
         self.units_base = 0.0
         self.units_screen_brightness = 0.0
         self.units_media = 0.0
@@ -337,7 +395,8 @@ class SessionSummery:
                 self.session_network_spent, self.app_open_most_frequently_name, self.app_open_most_frequently_times,
                 self.app_open_least_frequently_name, self.app_open_least_frequently_times, self.app_stay_longest_name,
                 self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
-                self.app_stay_longest_network, self.app_stay_shortest_network, self.units_base, self.units_screen_brightness,
+                self.app_stay_longest_network, self.app_stay_shortest_network,
+                self.nis_duration, self.nis_power_consumption, self.units_base, self.units_screen_brightness,
                 self.units_media, self.units_network, self.units_bluetooth, self.units_cpu, self.units_mem,
                 self.total_power_consumption]
 
@@ -354,7 +413,7 @@ class SessionSummery:
                 "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
                 "同个app被打开最少的次数", "session期间使用最久的App名", "session期间在某个APP停留的最长时间",
                 "session期间使用时间最短的App名", "session期间在某个APP停留的最短时间", "使用最久的APP所消耗的流量",
-                "使用最短的APP所消耗的流量"]
+                "使用最短的APP所消耗的流量", "NIS持续时长", "NIS阶段所消耗的总功耗"]
         headers.extend(unit_headers)
         return headers
 
@@ -373,7 +432,7 @@ class SessionSummery:
                       app_stay_shortest_name: str,
                       app_stay_shortest_duration: int,
                       app_stay_longest_network: float,
-                      app_stay_shortest_network: float):
+                      app_stay_shortest_network: float,):
         self.app_open_set = app_open_set
         self.app_page_open_set = app_page_open_set
         self.session_start_time = session_start_time
@@ -389,6 +448,18 @@ class SessionSummery:
         self.app_stay_shortest_duration = app_stay_shortest_duration
         self.app_stay_longest_network = app_stay_longest_network
         self.app_stay_shortest_network = app_stay_shortest_network
+
+    def add_nis_power(self, nisPowerUsage: NISPowerUsage):
+        self.units_base += nisPowerUsage.units_base
+        self.units_screen_brightness += nisPowerUsage.units_screen_brightness
+        self.units_media += nisPowerUsage.units_media
+        self.units_network += nisPowerUsage.units_network
+        self.units_bluetooth += nisPowerUsage.units_bluetooth
+        self.units_cpu += nisPowerUsage.units_cpu
+        self.units_mem += nisPowerUsage.units_mem
+        self.total_power_consumption += nisPowerUsage.total_power_consumption
+        self.nis_duration = nisPowerUsage.duration
+        self.nis_power_consumption += nisPowerUsage.total_power_consumption
 
     def add_up_units_power(self, summaryUsage: AppSummeryUsage):
         self.units_base += summaryUsage.units_base
@@ -431,6 +502,13 @@ def get_page_network_spent(powerData: DataFrame, pageStartTime: str, pageEndTime
                 networkSpent += networkSpeed
 
         return networkSpent
+
+
+def get_sum_consumption(unitsPower: []) -> float:
+    total = 0.0
+    for unit_power in unitsPower:
+        total += unit_power
+    return total
 
 
 def get_unit_consumption(unitPowerData: DataFrame, pageStartTime: str, pageEndTime: str) -> []:
@@ -564,7 +642,8 @@ def __analyse_app_detail_usage(appUsageData: DataFrame, powerData: DataFrame, un
 
 
 # 解析Session概括
-def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: int, outputRootDir: str):
+def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: int,
+                            nisPowerUsage: NISPowerUsage, outputRootDir: str):
     if summaryUsages:
         tempSummaryUsages = list(summaryUsages)
         appOpenSet = set()
@@ -581,6 +660,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
         appStayLongestNetworkSpent = 0.0
         appStayShortestNetworkSpent = 0.0
         sessionUsage = SessionSummery()
+        sessionUsage.add_nis_power(nisPowerUsage)
         for summaryUsage in tempSummaryUsages:
             appName = summaryUsage.app_name
             pageOpenSet = summaryUsage.page_open_set
@@ -646,6 +726,25 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
         else:
             unitsPowerData = pd.read_excel(unitsPowerDataPath, header=None)
 
+        # 寻找第一列Session所在的行号
+        sessionRowIdx = list(appUsageData.index[appUsageData.iloc[:, 0] == __session_for_search_row])
+        sessionDuration = appUsageData.iloc[sessionRowIdx[0], __session_total_duration_idx]
+        sessionScreenOnTime = appUsageData.iloc[sessionRowIdx[0], __session_screen_on_time_idx]
+        sessionScreenPresentTime = appUsageData.iloc[sessionRowIdx[0], __session_present_time_idx]
+        sessionScreenOffTime = appUsageData.iloc[sessionRowIdx[0], __session_screen_off_time_idx]
+        if len(sessionRowIdx) == 0:
+            JLog.t(__TAG, f"analyse: can not find Session's row index. found: {sessionRowIdx}")
+            return
+        # 分析app使用前的功耗数据, 也即nis的功耗
+        # 未解锁，NIS = TS
+        if sessionScreenPresentTime == __session_did_not_present_str:
+            nisPowerUsage = NISPowerUsage(sessionScreenOnTime, sessionScreenOffTime)
+            NISPower = get_unit_consumption(unitsPowerData, sessionScreenOnTime, sessionScreenOffTime)
+        else:
+            nisPowerUsage = NISPowerUsage(sessionScreenOnTime, sessionScreenPresentTime)
+            NISPower = get_unit_consumption(unitsPowerData, sessionScreenOnTime, sessionScreenPresentTime)
+        nisPowerUsage.add_unit_pw(NISPower)
+
         # 解析App使用详细数据
         appDetailUsages = __analyse_app_detail_usage(appUsageData, powerData, unitsPowerData, outputRootDir)
 
@@ -654,13 +753,7 @@ def analyse(appUsageFilePath: str, powerDataFilePath: str, unitsPowerDataPath: s
 
         # 解析Session使用概括
         startTime = appUsageData.iloc[0, __screen_on_time_idx]
-        # 寻找第一列Session所在的行号
-        sessionRowIdx = list(appUsageData.index[appUsageData.iloc[:, 0] == __session_for_search_row])
-        if len(sessionRowIdx) == 0:
-            JLog.t(__TAG, f"analyse: can not find Session's row index. found: {sessionRowIdx}")
-            return
-        sessionDuration = appUsageData.iloc[sessionRowIdx[0], __session_total_duration_idx]
-        __analyse_session_usage(summaryUsages, startTime, sessionDuration, outputRootDir)
+        __analyse_session_usage(summaryUsages, startTime, sessionDuration, nisPowerUsage, outputRootDir)
     except Exception as e:
         JLog.e(__TAG, f"analyse err happens: e = {e}, appUsageFilePath: {appUsageFilePath}, "
                       f"powerDataFilePath: {powerDataFilePath}, unitsPowerDataPath: {unitsPowerDataPath}")

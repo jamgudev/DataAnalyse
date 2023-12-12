@@ -3,11 +3,11 @@ import numpy as np
 
 from analyse.graph.GrapgNameSapce import GRAPH_user_units_consumption
 from analyse.graph.application.draw import AppColor
-from analyse.util.FilePathDefinition import OUTPUT_FILE
+from analyse.util.FilePathDefinition import OUTPUT_FILE, TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 # 读取Excel数据
-dirName = OUTPUT_FILE + "/" + GRAPH_user_units_consumption
+dirName = TEST_OUTPUT_FILE + "/" + GRAPH_user_units_consumption
 data = ExcelUtil.read_excel(dirName)[1:]
 
 
@@ -62,6 +62,8 @@ ax.set_ylabel('Consumption Ratios(%)')
 
 # 设置x轴刻度标签为用户ID
 ax.set_xticks(showNames)
+
+plt.xticks(rotation=25, ha='right')  # 设置刻度标签的旋转角度为0度，水平对齐方式为右对齐
 
 # 调整图形排版，使底部的图例完整显示
 plt.tight_layout()

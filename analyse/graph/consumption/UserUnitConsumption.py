@@ -12,7 +12,7 @@ from util import JLog, ExcelUtil
 
 # 不同元部件在不同用户各自的功耗占比分布
 def user_units_consumption():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []

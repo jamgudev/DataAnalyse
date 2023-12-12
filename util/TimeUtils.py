@@ -41,20 +41,20 @@ def time_duration_with_mills(end_time: str, start_time: str) -> int:
     tryStartTime = end_time
     tryEndTime = start_time
     try:
-        tryStartTime = time.mktime(time.strptime(end_time, timeMillsPattern))
+        tryStartTime = datetime.strptime(start_time, timeMillsPattern)
     except ValueError as e:
         JLog.e(__TAG, str(e))
     finally:
-        end_time = tryStartTime
+        start_time = tryStartTime
 
     try:
-        tryEndTime = time.mktime(time.strptime(start_time, timeMillsPattern))
+        tryEndTime = datetime.strptime(end_time, timeMillsPattern)
     except ValueError as e:
         JLog.e(__TAG, str(e))
     finally:
-        start_time = tryEndTime
+        end_time = tryEndTime
 
-    return int(end_time) - int(start_time)
+    return ((end_time - start_time).total_seconds() * 1000).__round__()
 
 
 def get_hour_from_date_str_with_mills(dateStr: str) -> int:
@@ -111,5 +111,4 @@ def compare_is_same_day(time_a: str, time_b: str) -> bool:
     pattern = '%Y%m%d'
 
     return time.mktime(time.strptime(a, pattern)) == time.mktime(time.strptime(b, pattern))
-
 

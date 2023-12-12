@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 
 from analyse.graph.GrapgNameSapce import GRAPH_units_consumption
-from analyse.util.FilePathDefinition import OUTPUT_FILE
+from analyse.util.FilePathDefinition import OUTPUT_FILE, TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 # 读取Excel数据
-dirName = OUTPUT_FILE + "/" + GRAPH_units_consumption
+dirName = TEST_OUTPUT_FILE + "/" + GRAPH_units_consumption
 df = ExcelUtil.read_excel(dirName)[1:]
 
 # 获取部件名称和功耗占比数据列

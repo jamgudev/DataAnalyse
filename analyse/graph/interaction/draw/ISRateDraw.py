@@ -39,12 +39,12 @@ edgecolors = ['black'] * len(x)
 # ax1.bar(np.arange(len(user_id)), totalActiveTimePerDay, width, label='Bar 1')
 # ax1.bar(np.arange(len(user_id)) + width, userActiveTimePerDay, width, label='Bar 2')
 # 绘制第一个条形图，颜色较深
-ax1.bar(x, totalActiveTimePerDay, width, alpha=1, color='white', edgecolor=edgecolors, label='AS length')
+ax1.bar(x, totalActiveTimePerDay, width, alpha=1, color='white', edgecolor=edgecolors, label='TS length')
 
 # 绘制第二个条形图，颜色较浅
 ax1.bar(x, userActiveTimePerDay, width, color='lightblue', edgecolor=edgecolors, label='IS length')
 ax1.text(max(x), max(totalActiveTimePerDay) - 20, f"NILR: {non_interactive_rate}%", ha='right', va='top')
-ax1.set_xlabel('Users')
+ax1.set_xlabel('Users(a)')
 ax1.set_ylabel('Session Length Per Day(in mins)')
 ax1.set_title('All User')
 ax1.legend()
@@ -63,12 +63,12 @@ ax2 = fig.add_subplot(gs[1])
 # for i in range(len(user_id)):
 #     ax2.plot([user_id[i], user_id[i]], [totalActiveTimes[i], userActiveTimes[i]], 'k--')
 # 绘制第一个条形图，颜色较深
-ax2.bar(x, totalActiveTimes, width, alpha=1, color='white', edgecolor=edgecolors, label='AS Count')
+ax2.bar(x, totalActiveTimes, width, alpha=1, color='white', edgecolor=edgecolors, label='TS Count')
 
 # 绘制第二个条形图，颜色较浅
 ax2.bar(x, userActiveTimes, width, color='lightblue', edgecolor=edgecolors, label='IS Count')
 ax2.text(16, max(totalActiveTimes) - 10, f"NICR: {non_interactive_rate}%", ha='right', va='top')
-ax2.set_xlabel('Users')
+ax2.set_xlabel('Users(b)')
 ax2.set_ylabel('Session Counts Per Day')
 ax2.set_title('All User')
 ax2.legend()

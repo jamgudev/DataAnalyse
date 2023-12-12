@@ -6,7 +6,7 @@ from util import JLog
 
 if __name__ == '__main__':
     startTime = time.time()
-    mutil_process_iter_files(INPUT_FILE, 6)
-    # single_process_iter_files(INPUT_FILE)
+    # mutil_process_iter_files(INPUT_FILE, 6)
+    single_process_iter_files(INPUT_FILE)
     cost = time.time() - startTime
     JLog.d("Root", f"program takes {cost} s.")
