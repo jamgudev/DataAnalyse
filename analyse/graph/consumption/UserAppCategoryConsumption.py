@@ -12,7 +12,7 @@ from util import JLog, ExcelUtil
 
 # 不同用户，不同app类别功耗占所有app功耗的占比
 def app_category_consumption():
-    dirName = TEST_OUTPUT_FILE
+    dirName = OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -20,6 +20,9 @@ def app_category_consumption():
             allAppCategories = get_all_app_categories(dirName)
             for user_idx, userName in enumerate(allUserName):
                 brand = PowerParamsUtil.get_phone_brand_by_user_name(userName)
+                if brand == "":
+                    bar()
+                    continue
                 unitsUsages = {}
                 totalConsumption = 0.0
                 dataOfEveryDay = iter_idx_data_from_file_in_every_day(dirName, userName,

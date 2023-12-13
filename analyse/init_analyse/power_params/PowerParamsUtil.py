@@ -22,5 +22,6 @@ def get_phone_brand_by_user_name(user_name: str) -> str:
     if user_name in paramsDict:
         return paramsDict[user_name]
     else:
-        raise ValueError(f"user_name:[{user_name}] has not been registered in file:[{POWER_PARAMS_LIST}]")
+        # raise ValueError(f"user_name:[{user_name}] has not been registered in file:[{POWER_PARAMS_LIST}]")
+        return ""
 

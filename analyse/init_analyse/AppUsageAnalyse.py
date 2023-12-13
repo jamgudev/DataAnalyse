@@ -364,6 +364,7 @@ class SessionSummery:
     # app_stay_shortest_network         使用最短的APP所消耗的流量
     def __init__(self):
         self.app_open_set = set()
+        self.app_has_home = 0
         self.app_page_open_set = set()
         self.session_start_time = ""
         self.session_duration = 0
@@ -391,10 +392,10 @@ class SessionSummery:
         self.all_units_power = []
 
     def to_excel_list(self) -> []:
-        return [len(self.app_open_set), len(self.app_page_open_set), self.session_start_time, self.session_duration,
-                self.session_network_spent, self.app_open_most_frequently_name, self.app_open_most_frequently_times,
-                self.app_open_least_frequently_name, self.app_open_least_frequently_times, self.app_stay_longest_name,
-                self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
+        return [len(self.app_open_set), self.app_has_home, len(self.app_page_open_set), self.session_start_time,
+                self.session_duration, self.session_network_spent, self.app_open_most_frequently_name,
+                self.app_open_most_frequently_times, self.app_open_least_frequently_name, self.app_open_least_frequently_times,
+                self.app_stay_longest_name, self.app_stay_longest_duration, self.app_stay_shortest_name, self.app_stay_shortest_duration,
                 self.app_stay_longest_network, self.app_stay_shortest_network,
                 self.nis_duration, self.nis_power_consumption, self.units_base, self.units_screen_brightness,
                 self.units_media, self.units_network, self.units_bluetooth, self.units_cpu, self.units_mem,
@@ -403,13 +404,13 @@ class SessionSummery:
     @staticmethod
     def empty_session(start_time: str, duration: int):
         session = SessionSummery()
-        session.set_app_usage(set(), set(), start_time, duration, 0, "", 0, "", 0, "", 0, "", 0, 0, 0)
+        session.set_app_usage(set(), 0, set(), start_time, duration, 0, "", 0, "", 0, "", 0, "", 0, 0, 0)
         return session
 
     @staticmethod
     def excel_header() -> []:
         unit_headers = PP_SUMMARY_HEADERS[1:len(PP_SUMMARY_HEADERS)]
-        headers = ["session期间不同App打开数量", "session期间不同页面打开数量", "session开始时间", "session持续时间",
+        headers = ["session期间不同App打开数量", "session期间打开的app中是否包含launch_app", "session期间不同页面打开数量", "session开始时间", "session持续时间",
                 "session期间使用了多少流量", "app被打开最多次的名称", "同个app被打开最多的次数", "app被打开最少次的名称",
                 "同个app被打开最少的次数", "session期间使用最久的App名", "session期间在某个APP停留的最长时间",
                 "session期间使用时间最短的App名", "session期间在某个APP停留的最短时间", "使用最久的APP所消耗的流量",
@@ -419,6 +420,7 @@ class SessionSummery:
 
     def set_app_usage(self,
                       app_open_set: set,
+                      app_has_home: int,
                       app_page_open_set: set,
                       session_start_time: str,
                       session_duration: int,
@@ -434,6 +436,7 @@ class SessionSummery:
                       app_stay_longest_network: float,
                       app_stay_shortest_network: float,):
         self.app_open_set = app_open_set
+        self.app_has_home = app_has_home
         self.app_page_open_set = app_page_open_set
         self.session_start_time = session_start_time
         self.session_duration = session_duration
@@ -661,6 +664,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
         appStayShortestNetworkSpent = 0.0
         sessionUsage = SessionSummery()
         sessionUsage.add_nis_power(nisPowerUsage)
+        appHasHome = 0
         for summaryUsage in tempSummaryUsages:
             appName = summaryUsage.app_name
             pageOpenSet = summaryUsage.page_open_set
@@ -670,6 +674,9 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
 
             appOpenSet.add(appName)
             appPageOpenSet = appPageOpenSet.union(pageOpenSet)
+            if appHasHome == 0 and summaryUsage.app_category == "home":
+                appHasHome = 1
+
             sessionNetworkSpent += appNetWorkSpent
             if appOpenMostFrequentlyTimes < openTimes:
                 appOpenMostFrequentlyName = appName
@@ -688,7 +695,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
                 appStayShortestNetworkSpent = appNetWorkSpent
             # 累加部件功耗
             sessionUsage.add_up_units_power(summaryUsage)
-        sessionUsage.set_app_usage(appOpenSet, appPageOpenSet, startTime, sessionDuration, sessionNetworkSpent,
+        sessionUsage.set_app_usage(appOpenSet, appHasHome, appPageOpenSet, startTime, sessionDuration, sessionNetworkSpent,
                                    appOpenMostFrequentlyName, appOpenMostFrequentlyTimes, appOpenLessFrequentlyName,
                                    appOpenLessFrequentlyTimes, appStayLongestName, appStayLongestDuration,
                                    appStayShortestName, appStayShortestDuration, appStayLongestNetworkSpent,

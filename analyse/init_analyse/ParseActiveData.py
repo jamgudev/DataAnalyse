@@ -212,6 +212,9 @@ def export_units_power(dirName: str, powerDataPath: str) -> str:
         userName = get_user_name(outputDir)
         dirName = dirName[0: get_mobile_number_start_pos(dirName) - 1]
         userPowerParamsFileDirName = PowerParamsUtil.get_phone_brand_by_user_name(userName)
+        if userPowerParamsFileDirName == "":
+            return ""
+
         powerParamFilePath = POWER_PARAMS_DIR + "/" + userPowerParamsFileDirName + "/" + POWER_PARAMS_MAT
         paramsData = ExcelUtil.read_excel(powerParamFilePath, 2)
         if not powerData.empty:
