@@ -35,8 +35,8 @@ minority_time = category_times[category_ratios_minority.index].sum()
 category_ratios_majority['minority'] = minority_time / total_time
 
 # 创建饼图数据和标签
-labels = category_ratios_majority.index.tolist() + ['minority']
-sizes = category_ratios_majority.tolist() + [category_ratios_majority['minority']]
+labels = category_ratios_majority.index.tolist()
+sizes = category_ratios_majority.tolist()
 
 # 按照特定顺序重新排列标签和数值
 # new_labels = labels[5:] + [labels[:5]]  # 将第一个标签放到最后

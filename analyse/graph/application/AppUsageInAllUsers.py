@@ -4,7 +4,7 @@ from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_app
 from analyse.graph.application import AppCategory
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE, OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 

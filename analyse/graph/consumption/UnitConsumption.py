@@ -5,13 +5,13 @@ from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_UNIT_CS_SCREEN, \
     GRAPH_units_consumption, AS_UNIT_CS_BASE
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 
 # 所有用户，不用元部件功耗占总功耗的比重
 def units_consumption():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -63,7 +63,7 @@ def units_consumption():
                                 unitsUsages["cpu"] += cpuConsumption
                                 unitsUsages["memory"] += memConsumption
                         except Exception as e:
-                            JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
+                            JLog.e("units_consumption",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                 bar()
             for key in unitsUsages.keys():

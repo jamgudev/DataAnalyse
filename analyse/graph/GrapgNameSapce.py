@@ -15,20 +15,26 @@ GRAPH_app_usage_in_all_users = "app_usage_in_all_users.xlsx"
 GRAPH_app_category_usage_in_diff_group_users = "app_category_usage_in_diff_group_users.xlsx"
 GRAPH_app_categories = "app_categories.xlsx"
 GRAPH_app_open_num_per_session = "app_open_num_per_session.xlsx"
+GRAPH_app_open_num_exclude_launch_per_session = "app_open_num_exclude_launch_per_session.xlsx"
 GRAPH_app_page_usage_in_sns = "app_page_usage_in_sns.xlsx"
 GRAPH_app_page_usage_in_all = "app_page_usage_in_all.xlsx"
 GRAPH_app_page_usage_in_streaming = "app_page_usage_in_streaming.xlsx"
 GRAPH_app_page_usage_in_game = "app_page_usage_in_game.xlsx"
 GRAPH_units_consumption = "units_consumption.xlsx"
 GRAPH_user_units_consumption = "user_units_consumption.xlsx"
+GRAPH_user_nis_consumption = "user_nis_consumption.xlsx"
 GRAPH_app_category_consumption = "app_category_consumption.xlsx"
 GRAPH_app_page_consumption = "app_page_consumption.xlsx"
 
 
 # session
 SS_APP_OPEN_NUM_IDX = 0
-SS_SESSION_LENGTH_IDX = 3
-SS_SESSION_START_TIME_IDX = 2
+SS_APP_OPEN_HAS_LAUNCH_IDX = 1
+SS_SESSION_LENGTH_IDX = 4
+SS_SESSION_START_TIME_IDX = 3
+SS_SESSION_NIS_LENGTH_IDX = 16
+SS_SESSION_NIS_CONSUMPTION_IDX = 17
+SS_SESSION_TOTAL_CONSUMPTION_IDX = 25
 # app detail usage
 AD_APP_PKG_NAME = 0
 AD_APP_CATEGORY = 1

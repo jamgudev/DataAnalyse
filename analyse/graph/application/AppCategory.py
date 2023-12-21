@@ -59,6 +59,25 @@ def export_app_category(dirName: str):
     return
 
 
+def get_app_mame_dict(dirName: str) -> dict:
+    path = dirName + "/" + GRAPH_app_categories
+    if not (os.path.exists(dirName + "/" + GRAPH_app_categories)):
+        # 定义源文件路径和目标文件路径
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        path = current_dir + "/" + GRAPH_app_categories
+    categoryDf = ExcelUtil.read_excel(path)[1:]
+    rows = categoryDf.shape[0]
+    appNameDict = {}
+    for row in range(rows):
+        pkgName = categoryDf.iloc[row, 0]
+        appName = categoryDf.iloc[row, 2]
+        if pd.isnull(appName):
+            appName = ""
+        appNameDict[pkgName] = appName
+
+    return appNameDict
+
+
 def get_app_category_dict(dirName: str) -> dict:
     path = dirName + "/" + GRAPH_app_categories
     if not (os.path.exists(dirName + "/" + GRAPH_app_categories)):
@@ -76,20 +95,37 @@ def get_app_category_dict(dirName: str) -> dict:
     return categoryDict
 
 
+def get_app_name(dirName: str, pkgName: str, appNameDict: dict = None) -> str:
+    if appNameDict is None:
+        appNameDict = get_app_mame_dict(dirName)
+    if pkgName in appNameDict:
+        return appNameDict[pkgName]
+    else:
+        raise ValueError(f"get_app_name_by_package error, pkgName:{pkgName} has not yet been classified.")
+
+
 def get_app_category(dirName: str, pkgName: str, appCategoryDict: dict = None) -> str:
     if appCategoryDict is None:
         appCategoryDict = get_app_category_dict(dirName)
     if pkgName in appCategoryDict:
         return appCategoryDict[pkgName]
     else:
-        raise ValueError(f"pkgName:{pkgName} has not yet been classified.")
+        raise ValueError(f"get_app_category error, pkgName:{pkgName} has not yet been classified.")
 
 
 def get_all_app_categories(dirName: str) -> list:
+    return get_list_by_col_idx(dirName, 1)
+
+
+def get_all_app_names(dirName: str) -> list:
+    return get_list_by_col_idx(dirName, 2)
+
+
+def get_list_by_col_idx(dirName: str, colIndex: int) -> list:
     path = dirName + "/" + GRAPH_app_categories
     if not (os.path.exists(dirName + "/" + GRAPH_app_categories)):
         # 定义源文件路径和目标文件路径
         current_dir = os.path.dirname(os.path.abspath(__file__))
         path = current_dir + "/" + GRAPH_app_categories
     categoryDf = ExcelUtil.read_excel(path)[1:]
-    return list(categoryDf.iloc[:, 1].unique())
+    return list(categoryDf.iloc[:, colIndex].unique())

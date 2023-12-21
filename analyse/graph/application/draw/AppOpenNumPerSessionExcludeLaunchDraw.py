@@ -2,12 +2,12 @@ import os
 
 import matplotlib.pyplot as plt
 
-from analyse.graph.GrapgNameSapce import GRAPH_app_open_num_per_session
+from analyse.graph.GrapgNameSapce import GRAPH_app_open_num_per_session, GRAPH_app_open_num_exclude_launch_per_session
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 # 读取Excel数据
-dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_open_num_per_session
+dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_open_num_exclude_launch_per_session
 df = ExcelUtil.read_excel(dirName)[1:]
 
 # 计算session数量的总数

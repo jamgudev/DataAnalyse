@@ -92,7 +92,7 @@ ax.tick_params(axis='y', labelsize=fontSize)
 # 设置x轴刻度和标签
 x_ticks = list(x[::10])  # 每隔10个取一个刻度位置
 ax.set_xticks(x_ticks)
-ax.set_xlim(0, 46)
+ax.set_xlim(0, 47)
 ax.set_ylim(0.0, 1.0)
 # 调整图表和标签的位置
 plt.subplots_adjust(top=0.94, left=0.05, right=0.95, bottom=0.45)

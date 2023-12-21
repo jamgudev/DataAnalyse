@@ -18,7 +18,7 @@ colors = np.random.rand(len(x))
 
 # 绘制散点图
 plt.scatter(x, y, c=colors)
-plt.xlabel('Mean Session Length (in mins)')
+plt.xlabel('Mean Session Length (mins)')
 plt.ylabel('Session Count Per Day')
 
 # 保存图像

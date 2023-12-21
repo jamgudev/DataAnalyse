@@ -54,7 +54,7 @@ ax.set_xlabel('User', fontsize=fontSize, labelpad=-10)
 ax.set_ylabel('App Usage Time Ratio', fontsize=fontSize)
 ax.tick_params(axis='x', labelsize=fontSize)
 ax.tick_params(axis='y', labelsize=fontSize)
-ax.set_xlim(-1, 45)
+ax.set_xlim(-1, len(x))
 ax.set_ylim(0.0, 1.0)
 
 # 设置x轴刻度和标签

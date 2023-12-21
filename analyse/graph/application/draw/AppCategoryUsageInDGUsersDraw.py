@@ -32,7 +32,7 @@ categories = grouped_values[app_category_col_idx].unique()
 x = np.arange(len(categories))
 width = 0.4
 
-colors = ['red', 'blue', 'green']  # 根据需要修改颜色
+colors = ['#17D2F3', '#AB63FA', 'green']  # 根据需要修改颜色
 
 for i, (group, data) in enumerate(grouped_values.groupby(grouped_values.columns[group_col_index])):
     offset = (i - 1) * width
@@ -43,7 +43,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(categories)
 plt.xticks(rotation=35, ha='right')  # 设置刻度标签的旋转角度为0度，水平对齐方式为右对齐
 plt.subplots_adjust(bottom=0.2)  # 调整图形底部的边距
-plt.ylim(0, 65)
+plt.ylim(0, 55)
 plt.ylabel("Percentage(%)")
 plt.xlabel("App Category")
 

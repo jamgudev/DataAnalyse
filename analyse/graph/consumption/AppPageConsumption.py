@@ -1,16 +1,15 @@
 from alive_progress import alive_bar
 
-from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_UNIT_CS_TOTAL, AS_APP_CATEGORY, \
-    GRAPH_app_category_consumption, AD_APP_PKG_NAME, AD_APP_PAGE_NAME, AD_APP_TOTAL_CONSUMPTION, GRAPH_app_page_consumption
+from analyse.graph.GrapgNameSapce import AD_APP_PKG_NAME, AD_APP_PAGE_NAME, AD_APP_TOTAL_CONSUMPTION, GRAPH_app_page_consumption
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, OUTPUT_FILE, EXPORT_APP_DETAIL_USAGES
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, EXPORT_APP_DETAIL_USAGES, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 
 # 所有用户使用的所有app里，不同app page占该app的功耗比重
 def app_page_consumption():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -46,7 +45,7 @@ def app_page_consumption():
                                 else:
                                     appTotalConsumptions[app_pkg_name] += pageConsumption
                         except Exception as e:
-                            JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
+                            JLog.e("app_page_consumption",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                 bar()
             for pkgName in pageConsumptions.keys():

@@ -7,7 +7,7 @@ from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_use
 from analyse.graph.application.AppCategory import get_all_app_categories
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.graph.interaction.ISRate import user_mean_active_time_per_day_vs_total_mean_active_time_per_day
-from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES, EXCEL_SUFFIX
+from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE, EXPORT_APP_SUMMARY_USAGES, EXCEL_SUFFIX, OUTPUT_FILE
 from util import ExcelUtil, JLog
 
 

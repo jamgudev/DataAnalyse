@@ -50,7 +50,7 @@ plt.subplots_adjust(bottom=0.2)
 
 plt.xlabel('App Category')
 plt.ylabel('Hot Pages Count')
-plt.title('Average Hot Pages Count and 95% Confidence Interval by App Category')
+# plt.title('Average Hot Pages Count and 95% Confidence Interval by App Category')
 
 plt.legend()
 

@@ -5,7 +5,7 @@ from analyse.graph.GrapgNameSapce import AS_APP_NAME, AS_APP_DURATION, GRAPH_app
 from analyse.graph.application import AppCategory
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir
-from analyse.util.FilePathDefinition import EXCEL_SUFFIX, TEST_OUTPUT_FILE, EXPORT_APP_DETAIL_USAGES
+from analyse.util.FilePathDefinition import EXCEL_SUFFIX, TEST_OUTPUT_FILE, EXPORT_APP_DETAIL_USAGES, OUTPUT_FILE
 from util import JLog, ExcelUtil
 
 # 依赖test/output/app_categories文件，执行前需保证这个文件存在，执行AppUsageInAllUsers会生成。

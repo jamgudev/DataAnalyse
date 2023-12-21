@@ -1,8 +1,9 @@
 from alive_progress import alive_bar
 
 from analyse.graph.GrapgNameSapce import SS_SESSION_LENGTH_IDX, SS_APP_OPEN_NUM_IDX, \
-    GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day
+    GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day, SS_SESSION_NIS_LENGTH_IDX
 from analyse.graph.base.__EveryDayAnalyseFromOutput import iter_idx_data_from_file_in_every_day
+from analyse.init_analyse.power_params import PowerParamsUtil
 from analyse.util.AnalyseUtils import get_all_user_name_from_dir, get_mean_of_list
 from analyse.util.FilePathDefinition import EXPORT_SESSION_SUMMARY, EXCEL_SUFFIX, TEST_OUTPUT_FILE
 from util import JLog, ExcelUtil
@@ -21,43 +22,53 @@ def user_mean_active_time_per_day_vs_total_mean_active_time_per_day(path: str = 
             for userName in allUserName:
                 dataOfEveryDay = iter_idx_data_from_file_in_every_day(dirName, userName,
                                                                       EXPORT_SESSION_SUMMARY + EXCEL_SUFFIX,
-                                                                      [SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX])
+                                                                      [SS_APP_OPEN_NUM_IDX, SS_SESSION_LENGTH_IDX,
+                                                                       SS_SESSION_NIS_LENGTH_IDX])
                 if isinstance(dataOfEveryDay, dict):
                     # 每天的active_time：当天所以session length总和
-                    totalActiveTimePerDay = []
-                    userActiveTimePerDay = []
+                    TSLengthPerDay = []
+                    ISLengthPerDay = []
                     # 下面是次数
-                    totalActiveTimesPerDay = []
-                    userActiveTimesPerDay = []
+                    TSTimesPerDay = []
+                    ISTimesPerDay = []
                     for idx, data in enumerate(dataOfEveryDay.values()):
                         try:
-                            activeInteractions = []
+                            tsDurations = []
+                            # isDurations元素的个数代表了有app交互的session次数，因此不可以往这个list里添加0
+                            isDurations = []
                             for session_idx, session_app_num in enumerate(data[0]):
                                 if float(session_app_num) != 0:
-                                    activeInteractions.append(float(data[1][session_idx]))
-                            userActiveTimePerDay.append(sum(activeInteractions))
-                            data_str = "+".join(data[1])
-                            data_sum = eval(data_str)
-                            totalActiveTimePerDay.append(int(data_sum))
-                            totalActiveTimesPerDay.append(len(data[1]))
-                            userActiveTimesPerDay.append(len(activeInteractions))
+                                    tsDuration = float(data[1][session_idx])
+                                    nisDuration = float(data[2][session_idx])
+                                    if tsDuration > nisDuration:
+                                        isDurations.append(tsDuration - nisDuration)
+                                    tsDurations.append(tsDuration)
+                                # 无APP交互
+                                else:
+                                    tsDurations.append(float(data[1][session_idx]))
+                            ISLengthPerDay.append(sum(isDurations))
+                            TSLengthPerDay.append(sum(tsDurations))
+                            ISTimesPerDay.append(len(isDurations))
+                            TSTimesPerDay.append(len(data[1]))
                         except Exception as e:
                             JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                     # 取平均
                     result = []
                     # [...]
-                    totalActiveMean = get_mean_of_list(totalActiveTimePerDay)
-                    userActiveMean = get_mean_of_list(userActiveTimePerDay)
+                    totalActiveMean = get_mean_of_list(TSLengthPerDay)
+                    userActiveMean = get_mean_of_list(ISLengthPerDay)
                     result.append(totalActiveMean)
                     result.append(userActiveMean)
-                    result.append(get_mean_of_list(totalActiveTimesPerDay))
-                    result.append(get_mean_of_list(userActiveTimesPerDay))
+                    result.append(get_mean_of_list(TSTimesPerDay))
+                    result.append(get_mean_of_list(ISTimesPerDay))
                     result.append(userName)
+                    brand = PowerParamsUtil.get_phone_brand_by_user_name(userName)
+                    result.append(brand)
                     allUserData.append(result)
                 bar()
-            allUserData.insert(0, ["用户每天Active总平均时长", "用户每天主动触发的Active平均时长",
-                                   "用户每天手机总Active次数", "用户每天手机中用户触发的Active次数", "用户"])
+            allUserData.insert(0, ["用户每天TS总平均时长", "用户IS平均时长",
+                                   "用户每天手机TS总次数", "用户每天IS次数", "用户", "型号"])
             ExcelUtil.write_to_excel(allUserData, dirName,
                                      GRAPH_user_mean_active_time_per_day_vs_total_mean_active_time_per_day)
 

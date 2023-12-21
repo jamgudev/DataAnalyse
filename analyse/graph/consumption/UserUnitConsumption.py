@@ -12,7 +12,7 @@ from util import JLog, ExcelUtil
 
 # 不同元部件在不同用户各自的功耗占比分布
 def user_units_consumption():
-    dirName = OUTPUT_FILE
+    dirName = TEST_OUTPUT_FILE
     allUserName = get_all_user_name_from_dir(dirName)
     if allUserName:
         allUserData = []
@@ -68,7 +68,7 @@ def user_units_consumption():
                                 unitsUsages["cpu"] += cpuConsumption
                                 unitsUsages["memory"] += memConsumption
                         except Exception as e:
-                            JLog.e("mean_active_time_per_day_with_std_of_every_user_pure",
+                            JLog.e("user_units_consumption",
                                    f"error: userName:{userName}, idx[{idx}], data:{data}, e:{e}")
                 userData = []
                 for key in unitsUsages.keys():

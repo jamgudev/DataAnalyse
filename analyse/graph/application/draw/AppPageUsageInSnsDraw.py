@@ -13,9 +13,9 @@ dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_page_usage_in_sns
 df = ExcelUtil.read_excel(dirName)[1:]
 
 # 各列索引
-app_name_idx = 0
-app_page_name_idx = 1
-app_page_duration_idx = 2
+app_name_idx = 1
+app_page_name_idx = 2
+app_page_duration_idx = 3
 
 # 把duration=0的过滤掉
 df = df[df.iloc[:, app_page_duration_idx] != 0]

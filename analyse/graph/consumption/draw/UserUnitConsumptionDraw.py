@@ -3,7 +3,7 @@ import numpy as np
 
 from analyse.graph.GrapgNameSapce import GRAPH_user_units_consumption
 from analyse.graph.application.draw import AppColor
-from analyse.util.FilePathDefinition import OUTPUT_FILE, TEST_OUTPUT_FILE
+from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
 # 读取Excel数据
@@ -17,6 +17,10 @@ user_brand_index = 1    # 用户手机品牌索引
 units_col_index = 2     # 部件列索引
 units_consumption_col_index = 3   # 部件功耗占比列索引
 data.iloc[:, units_consumption_col_index] = data.iloc[:, units_consumption_col_index] * 100
+
+# 过滤功耗占比为0的bluetooth
+data = data[data.iloc[:, units_consumption_col_index] != 0]
+
 
 # 根据某列数据排序
 # data = data.sort_values(data.columns[user_brand_index], ascending=True)
@@ -49,9 +53,9 @@ for i, part in enumerate(parts):
 
     bottom += power_consumption
 
-# 在条形图上方标出部件功耗的总占比
-for j, power in enumerate(bottom):
-    ax.text(showNames[j], power, f'{power:.2f}', ha='center', va='bottom')
+# # 在条形图上方标出部件功耗的总占比
+# for j, power in enumerate(bottom):
+#     ax.text(showNames[j], power, f'{power:.2f}', ha='center', va='bottom')
 
 # 添加图例和标签
 # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=len(parts))
