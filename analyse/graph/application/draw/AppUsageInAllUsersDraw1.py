@@ -17,6 +17,10 @@ app_col_index = 1   # 应用程序包名列索引
 time_col_index = 2  # 使用时间列索引
 app_category = 3    # app类别
 
+# 设置全局字体样式和大小
+plt.rcParams['font.family'] = 'Times New Roman'
+# plt.rcParams['font.size'] = 30
+
 # 计算每个用户的总使用时间
 user_total_time = df.groupby(df.iloc[:, user_col_index])[time_col_index].sum()
 
@@ -27,8 +31,13 @@ user_category_time = df.groupby([df.iloc[:, user_col_index], df.iloc[:, app_cate
 user_category_percentage = user_category_time.div(user_total_time, axis=0)
 
 # 创建新的图形对象并设置宽高比例
-fig = plt.figure(figsize=(32, 16))
+fig = plt.figure(figsize=(32, 20))
 ax = fig.add_subplot(111)
+
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+# ax.spines['bottom'].set_linewidth(0.5)
+# ax.spines['left'].set_linewidth(0.5)
 
 # 获取x轴刻度位置
 x = range(len(user_category_percentage))
@@ -48,9 +57,9 @@ for i, col in enumerate(user_category_percentage.columns):
         bottom += values
 
 # 设置图形的标题和标签
-fontSize = 30
+fontSize = 50
 # ax.set_title('App Usage Time Percentage by Category', fontsize=fontSize)
-ax.set_xlabel('User', fontsize=fontSize, labelpad=-10)
+ax.set_xlabel('Users (a)', fontsize=fontSize, labelpad=-10)
 ax.set_ylabel('App Usage Time Ratio', fontsize=fontSize)
 ax.tick_params(axis='x', labelsize=fontSize)
 ax.tick_params(axis='y', labelsize=fontSize)
@@ -67,7 +76,8 @@ ax.set_xticklabels(x_labels[::10])  # 每隔5个取一个标签
 plt.subplots_adjust(top=0.94, left=0.05, right=0.95, bottom=0.45)
 
 # 显示标签在图表的下方
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.09), ncol=8, fontsize=fontSize)
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=6, fontsize=46)
+# plt.tight_layout()
 
 # 保存图像
 current_dir = os.path.dirname(os.path.abspath(__file__))

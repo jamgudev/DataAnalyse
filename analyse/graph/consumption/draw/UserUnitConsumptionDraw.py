@@ -6,6 +6,10 @@ from analyse.graph.application.draw import AppColor
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
+# 设置全局字体样式和大小
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.size'] = 32
+
 # 读取Excel数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_user_units_consumption
 data = ExcelUtil.read_excel(dirName)[1:]
@@ -33,7 +37,7 @@ showNames = data["show_name"].unique()
 parts = data.iloc[:, units_col_index].unique()
 
 # 绘制条形累计分布图
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(16, 8))
 
 # 每个条形的宽度
 bar_width = 0.6
@@ -49,7 +53,7 @@ for i, part in enumerate(parts):
     power_consumption = np.nan_to_num(power_consumption)
 
     # 绘制条形图
-    ax.bar(showNames, power_consumption, bottom=bottom, width=bar_width, color=AppColor.custom_colors[i + 15], label=part)
+    ax.bar(showNames, power_consumption, bottom=bottom, width=bar_width, color=AppColor.C_9_1[i + 1], label=part)
 
     bottom += power_consumption
 
@@ -59,15 +63,22 @@ for i, part in enumerate(parts):
 
 # 添加图例和标签
 # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=len(parts))
-ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))  # 将图例显示在条形图的外部右侧
-ax.set_xlabel('Users')
-ax.set_ylabel('Consumption Ratios(%)')
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.35), ncol=6, fontsize=23)  # 将图例显示在条形图的外部右侧
+ax.set_xlabel('Models')
+ax.set_ylabel('Consumption Percentage (%)')
+
+# ax.spines['top'].set_visible(False)
+# ax.spines['right'].set_visible(False)
+ax.spines['top'].set_linewidth(0.5)
+ax.spines['right'].set_linewidth(0.5)
+ax.spines['bottom'].set_linewidth(0.5)
+ax.spines['left'].set_linewidth(0.5)
 # ax.set_ylim(0, 120)
 
 # 设置x轴刻度标签为用户ID
 ax.set_xticks(showNames)
 
-plt.xticks(rotation=25, ha='right')  # 设置刻度标签的旋转角度为0度，水平对齐方式为右对齐
+plt.xticks(rotation=20, ha='right')  # 设置刻度标签的旋转角度为0度，水平对齐方式为右对齐
 
 # 调整图形排版，使底部的图例完整显示
 plt.tight_layout()

@@ -549,7 +549,7 @@ def __summarize_detail_usage(detailUsages: [], outputRootDir: str) -> []:
         lastAppName = ""
         for detailUsage in tempUsages:
             # detailUsage = AppDetailUsage.from_list(detailUsage)
-            appName = detailUsage.app_name
+            appName = detailUsage.category_name
             category = detailUsage.category
             networkSpent = detailUsage.network_spent
             pageName = detailUsage.page_name
@@ -666,7 +666,7 @@ def __analyse_session_usage(summaryUsages: [], startTime: str, sessionDuration: 
         sessionUsage.add_nis_power(nisPowerUsage)
         appHasHome = 0
         for summaryUsage in tempSummaryUsages:
-            appName = summaryUsage.app_name
+            appName = summaryUsage.category_name
             pageOpenSet = summaryUsage.page_open_set
             appNetWorkSpent = summaryUsage.app_network_spent
             openTimes = summaryUsage.app_open_times

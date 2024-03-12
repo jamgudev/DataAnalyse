@@ -1,11 +1,24 @@
-import pandas as pd
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
+from matplotlib import font_manager
 
 from analyse.graph.GrapgNameSapce import GRAPH_app_page_usage_in_sns
-from analyse.graph.application import AppCategory
+from analyse.graph.application.draw import AppColor
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
+
+# 设置全局字体样式和大小
+
+# 设置全局字体样式和大小
+font_manager.fontManager.addfont('/Users/JAMGU_1/PycharmProjects/pythonProject/venv/lib/'
+                                 'python3.9/site-packages/matplotlib/mpl-data/fonts/ttf/SimSun.ttf')
+plt.rcParams['font.family'] = 'Times New Roman, SimSun'
+plt.rcParams['font.size'] = 30
+plt.figure(figsize=(16, 6))
+ax = plt.axes()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_linewidth(0.5)
+ax.spines['left'].set_linewidth(0.5)
 
 # 读取Excel文件
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_page_usage_in_sns
@@ -31,13 +44,15 @@ total_time = grouped.sum()
 percentages = grouped / total_time
 
 # 将比率小于1%的类别归为"minority"类别
-minority_threshold = 0.05
+minority_threshold = 0.01
 category_ratios_minority = percentages[percentages < minority_threshold]
 category_ratios_majority = percentages[percentages >= minority_threshold]
 
 # 将"minority"类别的总使用时长合并为一项
 minority_time = percentages[category_ratios_minority.index].sum()
 category_ratios_majority['minority'] = minority_time
+# 降序排序
+category_ratios_majority = category_ratios_majority.sort_values(ascending=False)
 
 # 创建饼图数据和标签
 labels = category_ratios_majority.index.tolist()
@@ -45,28 +60,35 @@ sizes = category_ratios_majority.tolist()
 
 for idx, label in enumerate(labels):
     if label == "minority":
-        labels[idx] = label + "(占比小于0.5%的页面总和)"
+        labels[idx] = label
     elif label == "com.tencent.mm.ui.LauncherUI":
-        labels[idx] = "聊天页面、主页"
+        labels[idx] = "聊天/主页"
     elif label == "com.tencent.mm.plugin.sns.ui.SnsTimeLineUI":
         labels[idx] = "朋友圈页面"
     else:
-        labels[idx] = label
+        sub_string = label.split('.')[-1]
+        if len(sub_string) > 5:
+            sub_string = sub_string[:5] + "..."
+        labels[idx] = sub_string
+        
 
-# 绘制饼图
-fig = go.Figure(data=[go.Pie(labels=labels, values=sizes)])
+# 绘制条形图
+plt.bar(labels, sizes, color=AppColor.C_11_3)
+plt.xlabel("微信应用的不同页面")
+plt.ylabel("停留时间占比")
+plt.ylim(0, 0.6)
 
-# 设置标签的位置和方向
-fig.update_traces(textinfo='percent+label', hole=0.25, textfont_size=24, insidetextorientation='horizontal',
-                  rotation=85, textfont_color='black',
-                  marker=dict(line=dict(color='#000000', width=1.5)))
+# 在每个条形图的顶部添加文本标签
+for index, value in enumerate(sizes):
+    if index >= 12:
+        break
+    plt.text(labels[index], value, str(round(value, 2)), ha='center', va='bottom')
 
-# 修改图例字体大小
-fig.update_layout(
-    legend=dict(font=dict(size=16),
-                x=0.15,  # 水平位置为居中（0为左对齐，1为右对齐）
-                y=-0.05,  # 垂直位置为顶部（0为底部，1为顶部）
-                orientation='h'))
+plt.text(len(labels) - 2, max(sizes) - 0.04, "minority: 占比小于1%的页面总和", ha='right', va='bottom')
+
+plt.xticks(rotation=35, ha='right')  # 设置刻度标签的旋转角度为0度，水平对齐方式为右对齐
+
+plt.tight_layout()
 
 # 显示饼图
-fig.show()
+plt.show()

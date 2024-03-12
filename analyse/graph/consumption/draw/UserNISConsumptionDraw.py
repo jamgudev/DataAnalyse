@@ -2,8 +2,19 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 from analyse.graph.GrapgNameSapce import GRAPH_user_nis_consumption
+from analyse.graph.application.draw import AppColor
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
+
+# 设置全局字体样式和大小
+plt.rcParams['font.family'] = 'Times New Roman'
+plt.rcParams['font.size'] = 26
+plt.figure(figsize=(16, 6))
+ax = plt.axes()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_linewidth(0.5)
+ax.spines['left'].set_linewidth(0.5)
 
 # 读取Excel数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_user_nis_consumption
@@ -21,24 +32,27 @@ user_ids = data.iloc[:, user_col_index]
 consumptions_ratios = data.iloc[:, nis_consumption_ratio]
 
 # 绘制散点图和连接线条
-plt.scatter(user_ids, consumptions_ratios, label='User')
-plt.plot(user_ids, consumptions_ratios, linestyle='-', color='#00D26E')
+plt.scatter(user_ids, consumptions_ratios, label='User', color=AppColor.keli_colors[0])
+plt.plot(user_ids, consumptions_ratios, linestyle='-', color=AppColor.keli_colors[0])
 
 # 计算功耗占比的平均值
 mean_consumption = consumptions_ratios.mean()
 
 # 在图表右上角标注功耗均值
-plt.text(user_ids.max(), consumptions_ratios.max() + 1.15, f'Mean: {mean_consumption:.2f}%', ha='right', va='top')
+plt.text(len(user_ids.values) - 0.2, consumptions_ratios.max() - 0.2, f'Mean: {mean_consumption:.2f}%', ha='right', va='top')
 
 # 在每个散点上方标注具体数值
 for i, j in zip(user_ids, consumptions_ratios):
     plt.text(i, j + 0.3, f'{j:.2f}', ha='center', va='bottom')
 
 plt.xlabel('Users')
-plt.ylabel('Consumption Ratio(%)')
+plt.ylabel('Consumption Percentage (%)')
 plt.ylim(1, 9)
+plt.yticks(range(2, 9, 2))
+plt.xticks(range(1, 14, 2))
 
-plt.legend()
+# plt.legend()
+plt.tight_layout()
 
 # 显示图形
 plt.show()

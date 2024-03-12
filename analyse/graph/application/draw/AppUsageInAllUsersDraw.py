@@ -53,8 +53,11 @@ app_total_ratio = app_total_time / app_total_time.sum()
 # 将小于0.01的比例归类为"Other"
 df.loc[df['TimeRatio'] < 0.05, df.columns[app_col_index]] = "minority"
 
+# 设置全局字体样式和大小
+plt.rcParams['font.family'] = 'Times New Roman'
+
 # 绘制条形累计占比图
-fig, ax = plt.subplots(figsize=(32, 16))
+fig, ax = plt.subplots(figsize=(32, 10))
 
 users = df.iloc[:, user_col_index].unique()
 bottom = [0] * len(users)
@@ -80,11 +83,11 @@ for i, app in enumerate(apps):
     if app == usage_ratio_less_than_5_percent_name:
         ax.bar(x, app_ratios.values, bottom=bottom, label=app, color="black")
     else:
-        ax.bar(x, app_ratios.values, bottom=bottom, label=get_category_by_pkg_name(app), color=AppColor.custom_colors[i])
+        ax.bar(x, app_ratios.values, bottom=bottom, label=get_category_by_pkg_name(app), color=AppColor.custom_colors_2[i])
     bottom += app_ratios
 
-fontSize = 28
-ax.set_xlabel('User', fontsize=fontSize)
+fontSize = 46
+ax.set_xlabel('Users (b)', fontsize=fontSize)
 ax.set_ylabel('App Usage Time Ratio', fontsize=fontSize)
 ax.tick_params(axis='x', labelsize=fontSize)
 ax.tick_params(axis='y', labelsize=fontSize)
@@ -96,6 +99,7 @@ ax.set_xlim(0, 47)
 ax.set_ylim(0.0, 1.0)
 # 调整图表和标签的位置
 plt.subplots_adjust(top=0.94, left=0.05, right=0.95, bottom=0.45)
+plt.tight_layout()
 
 # 显示标签在图表的下方
 # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.06), ncol=8, fontsize=fontSize)

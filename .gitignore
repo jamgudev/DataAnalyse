@@ -3,4 +3,11 @@
 */test/*
 */power_data/*
 *.png
-*/init_analyse/*.xlsx
+*.xlsx
+!analyse/graph/application/app_categories.xlsx
+!analyse/init_analyse/power_params/params_list.xlsx
+!analyse/graph/consumption/draw/error_cdf.xlsx
+!analyse/graph/consumption/draw/scenario_error.xlsx
+!analyse/graph/consumption/draw/single_error_cdf.xlsx
+__init__.py
+
