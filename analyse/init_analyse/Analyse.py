@@ -6,6 +6,7 @@ from util import JLog
 
 if __name__ == '__main__':
     startTime = time.time()
+    # 可调整并发线程数
     mutil_process_iter_files(INPUT_FILE, 6)
     # single_process_iter_files(INPUT_FILE)
     cost = time.time() - startTime

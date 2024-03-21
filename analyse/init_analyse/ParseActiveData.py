@@ -176,6 +176,7 @@ def merge_all_power_data(intputRootPath: str, fileNames: filter) -> str:
                         continue
 
                     # 到network_spend
+                    # 在这里定义列的位置
                     singleLine = data.iloc[lineNum,
                         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26]]
                     powerData.append(singleLine)

@@ -2,6 +2,7 @@ import os.path
 
 import pandas as pd
 
+# 修改此处的文件名
 io = "./depart_test_case/input/all_2_201_3.xlsx"  # 目标文件
 data = pd.read_excel(io, header=None)[1:]
 
