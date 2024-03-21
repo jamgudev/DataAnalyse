@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy import stats
 
-from analyse.graph.GrapgNameSapce import GRAPH_mean_interactive_length_in_hour_for_all_users, GRAPH_mean_IS_count_in_hour_per_day_for_all_users
+from analyse.graph.GrapgNameSapce import GRAPH_mean_IS_count_in_hour_per_day_for_all_users
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 

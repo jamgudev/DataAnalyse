@@ -22,9 +22,10 @@ data = ExcelUtil.read_excel(dirName)[1:]
 
 # 列索引
 user_col_index = 0      # 用户列索引
-user_brand_index = 1    # 用户手机品牌索引
-units_col_index = 2     # 部件列索引
-units_consumption_col_index = 3   # 部件功耗占比列索引
+user_name_index = 1     # 用户手机号
+user_brand_index = 2    # 用户手机品牌索引
+units_col_index = 3     # 部件列索引
+units_consumption_col_index = 4   # 部件功耗占比列索引
 data.iloc[:, units_consumption_col_index] = data.iloc[:, units_consumption_col_index] * 100
 
 # 过滤功耗占比为0的bluetooth

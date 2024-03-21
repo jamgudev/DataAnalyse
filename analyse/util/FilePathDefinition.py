@@ -29,7 +29,7 @@ EXPORT_UNITS_POWER = "units_power_usage"
 # power_params
 POWER_PARAMS_DIR = rootDir + "/init_analyse/power_params"
 POWER_PARAMS_LIST = POWER_PARAMS_DIR + "/params_list.xlsx"
-POWER_PARAMS_HNR60PRO = "honor60pro"
+POWER_PARAMS_HNR60PRO = "h60pro"
 POWER_PARAMS_k60 = "k60"
 POWER_PARAMS_mt40 = "mt40"
 POWER_PARAMS_p50pro = "p50pro"

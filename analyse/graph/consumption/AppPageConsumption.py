@@ -85,7 +85,7 @@ def app_page_consumption():
                 usersData = brandData[brand]
                 for user_name in usersData.keys():
                     for user_data in usersData[user_name]:
-                        allUserData.append([str(user_idx), user_name] + user_data[:])
+                        allUserData.append([int(user_idx), user_name] + user_data[:])
                     user_idx += 1
 
             allUserData.insert(0, ["用户名", "手机号", "手机型号", "app类别", "app名", "app页面名", "页面停留时长(分钟)",

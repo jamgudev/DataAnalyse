@@ -3,12 +3,16 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 from analyse.graph.GrapgNameSapce import GRAPH_most_cost_energy_app
+from analyse.graph.application.draw import AppColor
+from analyse.graph.consumption.draw.OutputMostCostEnergyApp import output_most_cost_energy_app
 from analyse.util.FilePathDefinition import TEST_OUTPUT_FILE
 from util import ExcelUtil
 
+output_most_cost_energy_app()
+
 # 设置全局字体样式和大小
 plt.rcParams['font.family'] = 'Times New Roman'
-plt.rcParams['font.size'] = 26
+plt.rcParams['font.size'] = 40
 
 # 绘制散点图
 plt.figure(figsize=(20, 10))
@@ -34,6 +38,10 @@ stay_duration_col = 5
 stay_duration_rate_col = 6
 app_energy_cost_rate_col = 7
 app_energy_cost_per_min_col = 8
+
+# 获取所有的用户名
+data["show_name"] = data.iloc[:, user_idx_col].astype(str) + "_" + data.iloc[:, phone_brand_col]
+data = data.sort_values(by=data.columns[user_idx_col], ascending=True)
 
 # 过滤出常用app
 filtered_df = data[data.iloc[:, stay_duration_rate_col] >= 0.05]
@@ -66,9 +74,20 @@ for row_idx, row_data in data.iterrows():
     app_line_data[user_idx] = app_energy_cost
     dataset[app_name] = app_line_data
 
+# 进一步过滤出大家都有的热门应用进行统计，需要人眼统计
+filtered_appnames = []
+for app_name in appnames:
+    if app_name in dataset.keys():
+        app_line_data = dataset[app_name]
+        # 大部分都有，过滤出来
+        hasNum = len(app_line_data.keys())
+        if hasNum >= (len(users) - 2):
+            filtered_appnames.append(app_name)
+
+
 # 遍历 dataset，查缺补漏，输出热力图的二维数组
 hot_data = []
-for app_name in appnames:
+for app_name in filtered_appnames:
     if app_name in dataset.keys():
         app_line_data = dataset[app_name]
         app_energy_data = []
@@ -84,16 +103,19 @@ for app_name in appnames:
 # 画图
 
 # 自定义x坐标和y坐标的标签
-x_labels = users
-y_labels = appnames
+x_labels = data["show_name"].unique()
+y_labels = filtered_appnames
 
 # 使用seaborn库绘制热力图，并设置自定义的坐标标签
-sns.heatmap(hot_data, annot=True, cmap="YlGnBu", xticklabels=x_labels, yticklabels=y_labels,
-            linecolor='black', linewidths=1)
+sns.heatmap(hot_data, annot=True, cmap=AppColor.cmap, xticklabels=x_labels, yticklabels=y_labels,
+            linecolor='black', linewidths=1, annot_kws={"fontsize": 36})
+
+# 设置x轴标签倾斜角度
+ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha='right')
 
 # 设置图表的标题和标签
-plt.xlabel("Users")
-plt.ylabel("APPs")
+# plt.xlabel("Users")
+# plt.ylabel("APPs")
 
 plt.tight_layout()
 

@@ -21,9 +21,10 @@ data = ExcelUtil.read_excel(dirName)[1:]
 
 # 列索引
 user_col_index = 0      # 用户列索引
-phone_brand_col_index = 1     # 用户手机品牌
-app_category_col_index = 2     # app分类列索引
-category_consumption_col_index = 4   # app功耗占比列索引
+user_name_index = 1     # 用户手机品牌
+phone_brand_col_index = 2     # 用户手机品牌
+app_category_col_index = 3     # app分类列索引
+category_consumption_col_index = 5   # app功耗占比列索引
 data.iloc[:, category_consumption_col_index] = data.iloc[:, category_consumption_col_index] * 100
 
 # 将小于0.005的比例归类为"Other"
@@ -33,7 +34,7 @@ data.iloc[:, category_consumption_col_index] = data.iloc[:, category_consumption
 grouped_data = data.groupby(data.columns[user_col_index])
 
 # 获取所有的用户名
-data["show_name"] = data.iloc[:, user_col_index] + "_" + data.iloc[:, phone_brand_col_index]
+data["show_name"] = data.iloc[:, user_col_index].astype(str) + "_" + data.iloc[:, phone_brand_col_index]
 showNames = data["show_name"].unique()
 
 # 获取应用分类

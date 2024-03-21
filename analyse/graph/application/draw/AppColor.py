@@ -1,3 +1,4 @@
+from matplotlib.colors import LinearSegmentedColormap
 from met_brewer import met_brew
 
 
@@ -48,5 +49,8 @@ C_20_1 = C_9_3 + C_11_2
 C_20_2 = C_9_2 + C_11_3
 C_20_3 = C_9_2 + C_11_4
 C_20_4 = C_9_3[1:] + C_11_1
+
+# 创建自定义颜色映射
+cmap = LinearSegmentedColormap.from_list('custom_cmap', C_9_1)
 
 C_7_1 = ["#440154", "#433983", "#30678D", "#20908C", "#36B877", "#90D643", "#FDE724"]

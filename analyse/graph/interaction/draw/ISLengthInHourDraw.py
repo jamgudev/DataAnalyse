@@ -17,6 +17,8 @@ data_lists = []
 
 # 提取每一列的数据并存储到列表中
 for column in df.columns:
+    if column == 0:
+        continue
     data = df[column].tolist()
     # 除以 （60 * 1000）
     data_lists.append([x / (60 * 1000) for x in data])
@@ -29,7 +31,7 @@ confidence_intervals = [stats.t.interval(0.95, len(data)-1, loc=np.mean(data), s
 
 # 绘制图表
 plt.figure(figsize=(10, 6))
-x = np.arange(len(df.columns))
+x = np.arange(len(data_lists))
 plt.errorbar(x, averages, yerr=[(ci[1]-ci[0])/2 for ci in confidence_intervals], fmt='o-', capsize=4)
 
 plt.xticks(x)

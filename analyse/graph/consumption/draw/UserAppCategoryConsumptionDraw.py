@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,7 +10,14 @@ from util import ExcelUtil
 
 # 设置全局字体样式和大小
 plt.rcParams['font.family'] = 'Times New Roman'
-plt.rcParams['font.size'] = 26
+plt.rcParams['font.size'] = 32
+
+# 绘制条形累计分布图
+fig, ax = plt.subplots(figsize=(16, 8))
+ax.spines['top'].set_linewidth(1)
+ax.spines['right'].set_linewidth(1)
+ax.spines['bottom'].set_linewidth(1)
+ax.spines['left'].set_linewidth(1)
 
 # 读取Excel数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_category_consumption
@@ -16,30 +25,21 @@ data = ExcelUtil.read_excel(dirName)[1:]
 
 # 列索引
 user_col_index = 0      # 用户列索引
-phone_brand_col_index = 1     # 用户手机品牌
-app_category_col_index = 2     # app分类列索引
-category_consumption_col_index = 4   # app功耗占比列索引
+user_name_index = 1     # 用户手机品牌
+phone_brand_col_index = 2     # 用户手机品牌
+app_category_col_index = 3     # app分类列索引
+category_consumption_col_index = 5   # app功耗占比列索引
 data.iloc[:, category_consumption_col_index] = data.iloc[:, category_consumption_col_index] * 100
 
 # 将小于0.005的比例归类为"Other"
 # data.loc[data.columns[category_consumption_col_index] < 0.5, data.columns[app_category_col_index]] = "minority"
 
-# 按用户名分组
-grouped_data = data.groupby(data.columns[user_col_index])
-
 # 获取所有的用户名
-data["show_name"] = data.iloc[:, user_col_index] + "_" + data.iloc[:, phone_brand_col_index]
+data["show_name"] = data.iloc[:, user_col_index].astype(str) + "_" + data.iloc[:, phone_brand_col_index]
 showNames = data["show_name"].unique()
 
 # 获取应用分类
 categories = data.iloc[:, app_category_col_index].unique()
-
-# 绘制条形累计分布图
-fig, ax = plt.subplots(figsize=(16, 6))
-ax.spines['top'].set_linewidth(1)
-ax.spines['right'].set_linewidth(1)
-ax.spines['bottom'].set_linewidth(1)
-ax.spines['left'].set_linewidth(1)
 
 # 每个条形的宽度
 bar_width = 0.6
@@ -73,6 +73,12 @@ plt.yticks(range(0, 110, 50))
 
 # 调整图形排版，使底部的图例完整显示
 plt.tight_layout()
+
+# 保存图像
+current_dir = os.path.dirname(os.path.abspath(__file__))
+save_path = os.path.join(current_dir, 'GRAPH_app_category_consumption.png')
+plt.savefig(save_path)
+
 
 # 显示图形
 plt.show()

@@ -8,7 +8,15 @@ from util import ExcelUtil
 
 # 设置全局字体样式和大小
 plt.rcParams['font.family'] = 'Times New Roman'
-plt.rcParams['font.size'] = 26
+plt.rcParams['font.size'] = 32
+
+# 绘制散点图
+plt.figure(figsize=(16, 8))
+ax = plt.axes()
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_linewidth(0.5)
+ax.spines['left'].set_linewidth(0.5)
 
 # 读取Excel数据
 dirName = TEST_OUTPUT_FILE + "/" + GRAPH_app_category_consumption
@@ -16,9 +24,10 @@ data = ExcelUtil.read_excel(dirName)[1:]
 
 # 列索引
 user_col_index = 0      # 用户列索引
-phone_brand_col_index = 1     # 用户手机品牌
-app_category_col_index = 2     # app分类列索引
-category_consumption_col_index = 4   # app功耗占比列索引
+user_name_index = 1     # 用户手机品牌
+phone_brand_col_index = 2     # 用户手机品牌
+app_category_col_index = 3     # app分类列索引
+category_consumption_col_index = 5   # app功耗占比列索引
 data.iloc[:, category_consumption_col_index] = data.iloc[:, category_consumption_col_index] * 100.0
 
 result = data.groupby([data.iloc[:, app_category_col_index]])[category_consumption_col_index]\
@@ -32,13 +41,6 @@ result['lower_bound'], result['upper_bound'] = stats.t.interval(0.95, len(data)-
 
 result = result.sort_values('mean', ascending=True)
 
-# 绘制散点图
-plt.figure(figsize=(16, 6))
-ax = plt.axes()
-ax.spines['top'].set_visible(False)
-ax.spines['right'].set_visible(False)
-ax.spines['bottom'].set_linewidth(0.5)
-ax.spines['left'].set_linewidth(0.5)
 
 # plt.scatter(result.iloc[:, 0], result.iloc[:, 1], label='Mean')
 # plt.plot(result.iloc[:, 0], result.iloc[:, 1], linestyle='-', color='blue')
@@ -59,7 +61,8 @@ for i in range(len(x_pos)):
 # 在每个数据点上标明纵坐标值
 for i, j in result.iterrows():
     if j[result.columns[1]] > 1:
-        plt.text(j[result.columns[0]], j[result.columns[1]] + 1.5, f'{j[result.columns[1]]:.2f}', ha='center', va='bottom')
+        plt.text(j[result.columns[0]], j[result.columns[1]] + 1.5, f'{j[result.columns[1]]:.2f}',
+                 ha='center', va='bottom', fontdict={"size": 26})
 
 plt.xticks(rotation=25, ha='right')
 plt.yticks(range(0, 61, 20))

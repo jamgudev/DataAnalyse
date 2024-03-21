@@ -19,9 +19,10 @@ data = ExcelUtil.read_excel(dirName)[1:]
 
 # 列索引
 user_col_index = 0      # 用户列索引
-phone_brand_col_index = 1     # 用户手机品牌
-app_category_col_index = 2     # app分类列索引
-category_consumption_col_index = 4   # app功耗占比列索引
+user_name_index = 1     # 用户手机品牌
+phone_brand_col_index = 2     # 用户手机品牌
+app_category_col_index = 3     # app分类列索引
+category_consumption_col_index = 5   # app功耗占比列索引
 data.iloc[:, category_consumption_col_index] = data.iloc[:, category_consumption_col_index] * 100.0
 
 result = data.groupby([data.iloc[:, app_category_col_index]])[category_consumption_col_index]\

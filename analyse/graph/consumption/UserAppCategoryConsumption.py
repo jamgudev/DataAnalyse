@@ -64,10 +64,10 @@ def app_category_consumption():
             usersData = brandData[brand]
             for user_name in usersData.keys():
                 for units_usage in usersData[user_name]:
-                    allUserData.append([str(user_idx)] + units_usage[:])
+                    allUserData.append([int(user_idx), user_name] + units_usage[:])
                 user_idx += 1
 
-        allUserData.insert(0, ["用户名", "手机型号", "app类别", "消耗的功耗", "功耗占比"])
+        allUserData.insert(0, ["用户名", "手机号", "手机型号", "app类别", "消耗的功耗", "功耗占比"])
         ExcelUtil.write_to_excel(allUserData, dirName,
                                  GRAPH_app_category_consumption)
 

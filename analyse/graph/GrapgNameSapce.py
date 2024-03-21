@@ -27,6 +27,7 @@ GRAPH_app_category_consumption = "app_category_consumption.xlsx"
 GRAPH_app_page_consumption = "app_page_consumption.xlsx"
 GRAPH_most_cost_energy_app = "most_cost_energy_app.xlsx"
 GRAPH_most_cost_energy_app_category = "most_cost_energy_app_category.xlsx"
+GRAPH_most_cost_energy_app_page = "most_cost_energy_app_page.xlsx"
 
 # session
 SS_APP_OPEN_NUM_IDX = 0

@@ -29,8 +29,12 @@ def mean_IS_count_in_hour_per_day_for_all_users():
                             ISCountInHourInSingleDay = {}
                             # 某天数据
                             for session_idx, session_app_num in enumerate(data[0]):
+                                has_launch = int(data[1][session_idx])
                                 # 过滤无app的情况
                                 if float(session_app_num) != 0:
+                                    # 过滤只有launch页记录的情况
+                                    if float(session_app_num) == 1 and has_launch == 1:
+                                        continue
                                     # 根据时间段分组
                                     startTime = TimeUtils.get_hour_from_date_str_with_mills(data[2][session_idx])
                                     if startTime != -1:
